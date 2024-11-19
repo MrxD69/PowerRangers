@@ -5,60 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Welcome!{% endblock %}</title>
 
-    <!-- Local Bootstrap CSS -->
+    <!-- Include Bootstrap -->
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
 
-    <!-- Global Custom Styles -->
-    <link href="{{ asset('css/common.css') }}" rel="stylesheet">
+    <!-- Include Navbar CSS -->
+    <link href="{{ asset('css/navbar.css') }}" rel="stylesheet">
 
-    {% block stylesheets %}
-        <!-- Page-specific stylesheets -->
-    {% endblock %}
+    {% block stylesheets %}{% endblock %}
 </head>
 <body>
-<!-- Navigation -->
-{% block navigation %}
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="{{ path('home_index') }}">Symfony App</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ path('home_index') }}">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ path('auth_login') }}">Login</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ path('auth_register') }}">Register</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-{% endblock %}
+<!-- Navbar -->
+{% include 'partials/navbar.html.twig' %}
 
 <!-- Page Content -->
-<div class="container mt-4">
-    {% block body %}
-    {% endblock %}
+<div class="container">
+    {% block body %}{% endblock %}
 </div>
 
-<!-- Footer -->
-{% block footer %}
-    <footer class="footer mt-auto py-3 bg-light">
-        <div class="container">
-            <span class="text-muted">&copy; {{ "now"|date("Y") }} Your Symfony App</span>
-        </div>
-    </footer>
-{% endblock %}
-
-<!-- Local Bootstrap JS -->
+<!-- Include JavaScript -->
 <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
-
-{% block javascripts %}
-    <!-- Page-specific JavaScript -->
-{% endblock %}
+{% block javascripts %}{% endblock %}
 </body>
 </html>
