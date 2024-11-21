@@ -6,7 +6,7 @@
     <div id="navbarCollapse" class="collapse navbar-collapse justify-content-start">
         <div class="navbar-nav">
             <a href="{{ path('home_index') }}" class="nav-item nav-link">Home</a>
-{#            <a href="{{ path('about_page') }}" class="nav-item nav-link">About</a>#}
+            {#            <a href="{{ path('about_page') }}" class="nav-item nav-link">About</a>#}
             <div class="nav-item dropdown">
                 <a href="#" data-toggle="dropdown" class="nav-item nav-link dropdown-toggle">Services</a>
                 <div class="dropdown-menu">
@@ -16,7 +16,7 @@
                     <a href="#" class="dropdown-item">Digital Marketing</a>
                 </div>
             </div>
-            <a href="" class="nav-item nav-link">Pricing</a>
+            <a href="{{ path('app_evenement_index') }}" class="nav-item nav-link">Evenement</a>
             <a href="" class="nav-item nav-link">Blog</a>
             <a href="" class="nav-item nav-link">Contact</a>
         </div>
@@ -28,7 +28,7 @@
                 </span>
             </div>
         </form>
-        <div class="navbar-nav ml-auto">
+        <div class="navbar-nav ml-auto d-flex justify-content-end">
             <a href="" class="btn btn-outline-primary mr-2">Login</a>
             <a href="" class="btn btn-primary">Sign Up</a>
         </div>

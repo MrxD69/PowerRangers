@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Participants{% endblock %}
+
+{% block body %}
+
+    <h1 class="text-center my-4">Participants</h1>
+
+    <div class="container">
+        <div class="row">
+            {% for participant in participants %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="single-schedules-inner card shadow-sm">
+                        <h5 class="card-title px-3 mt-3">{{ participant.nom }} {{ participant.prenom }}</h5>
+                        <p class="card-text px-3">
+                            Âge : {{ participant.age }}<br>
+                            Email : {{ participant.email }}<br>
+                            Téléphone : {{ participant.numTelephone }}
+                        </p>
+                        <div class="card-footer d-flex justify-content-between">
+                            <a href="{{ path('app_participant_show', {'id': participant.id}) }}" class="btn btn-primary btn-sm">Voir</a>
+                            <a href="{{ path('app_participant_edit', {'id': participant.id}) }}" class="btn btn-secondary btn-sm">Modifier</a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <p class="text-center">Aucun participant trouvé.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{{ path('app_participant_new') }}" class="btn btn-success">Créer un nouveau participant</a>
+    </div>
+{% endblock %}

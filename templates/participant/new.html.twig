@@ -1,0 +1,140 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter un Participant{% endblock %}
+
+{% block body %}
+
+    <style>
+        .container-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #66afe9;
+        }
+
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 12px;
+            background-color: #20B2AA;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            background-color: #8eeaa5;
+        }
+
+        .text-danger {
+            color: red;
+        }
+
+        .footer {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .footer a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+
+    <div class="container-wrapper">
+        <div class="container">
+            <h2>Ajouter un Participant</h2>
+
+            {{ form_start(form) }}
+
+            <div class="form-group">
+                <label for="nom">Nom :</label>
+                {{ form_widget(form.nom, {'attr': {'placeholder':'Nom du participant'}}) }}
+                {{ form_errors(form.nom, { 'attr': {class: 'text-danger'} }) }}
+            </div>
+
+            <div class="form-group">
+                <label for="prenom">Prénom :</label>
+                {{ form_widget(form.prenom, {'attr': {'placeholder':'Prénom du participant'}}) }}
+                {{ form_errors(form.prenom, { 'attr': {class: 'text-danger'} }) }}
+            </div>
+
+            <div class="form-group">
+                <label for="age">Âge :</label>
+                {{ form_widget(form.age, {'attr': {'placeholder':'Âge du participant'}}) }}
+                {{ form_errors(form.age, { 'attr': {class: 'text-danger'} }) }}
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email :</label>
+                {{ form_widget(form.email, {'attr': {'placeholder':'Email du participant'}}) }}
+                {{ form_errors(form.email, { 'attr': {class: 'text-danger'} }) }}
+            </div>
+
+            <div class="form-group">
+                <label for="numTelephone">Numéro de téléphone :</label>
+                {{ form_widget(form.num_telephone, {'attr': {'placeholder':'Numéro de téléphone'}}) }}
+                {{ form_errors(form.num_telephone, { 'attr': {class: 'text-danger'} }) }}
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn">Ajouter</button>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+    <div class="footer">
+        <a href="{{ path('app_participant_index') }}">Retour à la liste</a>
+    </div>
+
+{% endblock %}
