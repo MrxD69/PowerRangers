@@ -1,5 +1,44 @@
+{#<!DOCTYPE html>#}
+{#<html lang="en">#}
+{#<head>#}
+{#    <meta charset="UTF-8">#}
+{#    <meta name="viewport" content="width=device-width, initial-scale=1.0">#}
+{#    <title>{% block title %}Welcome!{% endblock %}</title>#}
+
+{#    <!-- Include Bootstrap -->#}
+{#    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">#}
+
+{#    <!-- Include Navbar CSS -->#}
+{#    <link href="{{ asset('css/navbar.css') }}" rel="stylesheet">#}
+
+{#    <!-- Include Additional Styles -->#}
+{#    {% block stylesheets %}#}
+{#        <link rel="stylesheet" href="{{ asset('css/auth.css') }}">#}
+{#    {% endblock %}#}
+{#</head>#}
+{#<body>#}
+{#<!-- Navbar -->#}
+{#{% include 'partials/navbar.html.twig' %}#}
+
+{#<!-- Main Content -->#}
+{#<main>#}
+{#    <div class="container my-4">#}
+{#        {% block body %}{% endblock %}#}
+{#    </div>#}
+{#</main>#}
+
+{#<!-- Footer -->#}
+{#{% include 'partials/footer.html.twig' %}#}
+
+{#<!-- Include Bootstrap JS -->#}
+{#<script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>#}
+
+{#<!-- Include Additional Scripts -->#}
+{#{% block javascripts %}{% endblock %}#}
+{#</body>#}
+{#</html>#}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,19 +50,29 @@
     <!-- Include Navbar CSS -->
     <link href="{{ asset('css/navbar.css') }}" rel="stylesheet">
 
-    {% block stylesheets %}{% endblock %}
+    <!-- Include Additional Styles -->
+    {% block stylesheets %}
+        <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
+    {% endblock %}
 </head>
 <body>
 <!-- Navbar -->
 {% include 'partials/navbar.html.twig' %}
 
-<!-- Page Content -->
-<div class="container">
-    {% block body %}{% endblock %}
-</div>
+<!-- Main Content -->
+<main>
+    <div class="container my-4">
+        {% block body %}{% endblock %}
+    </div>
+</main>
 
-<!-- Include JavaScript -->
+<!-- Footer -->
+{% include 'partials/footer.html.twig' %}
+
+<!-- Include Bootstrap JS -->
 <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+
+<!-- Include Additional Scripts -->
 {% block javascripts %}{% endblock %}
 </body>
 </html>
