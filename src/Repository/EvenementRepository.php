@@ -40,4 +40,17 @@ class EvenementRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+// src/Repository/EvenementRepository.php
+
+    public function findByName(string $name): array
+    {
+        return $this->createQueryBuilder('e')
+            ->where('e.nom LIKE :name')
+            ->setParameter('name', '%' . $name . '%')
+            ->orderBy('e.nom', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+
 }
