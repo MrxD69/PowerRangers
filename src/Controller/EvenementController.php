@@ -31,7 +31,7 @@ final class EvenementController extends AbstractController{
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($evenement);
             $entityManager->flush();
-
+//
             return $this->redirectToRoute('app_evenement_index', [], Response::HTTP_SEE_OTHER);
         }
 
