@@ -6,42 +6,23 @@ use App\Repository\AdminRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AdminRepository::class)]
-class Admin
+class Admin extends User
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private ?int $id = null;
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $privileges = [];
 
-    #[ORM\OneToOne(targetEntity: User::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
-
-    #[ORM\Column(type: 'json')]
-    private array $privileges = [];
-
-    public function getId(): ?int
+    public function __construct()
     {
-        return $this->id;
+        parent::__construct();
+        $this->setRole('admin');
     }
 
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    public function setUser(User $user): self
-    {
-        $this->user = $user;
-        return $this;
-    }
-
-    public function getPrivileges(): array
+    public function getPrivileges(): ?array
     {
         return $this->privileges;
     }
 
-    public function setPrivileges(array $privileges): self
+    public function setPrivileges(?array $privileges): self
     {
         $this->privileges = $privileges;
         return $this;

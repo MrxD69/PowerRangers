@@ -1,10 +1,32 @@
 security:
+    password_hashers:
+        App\Entity\User:
+            algorithm: auto
+
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
+
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|js|images)/
             security: false
 
         main:
-            security: false # Disable authentication temporarily
+            lazy: true
+            provider: app_user_provider
+            form_login:
+                login_path: auth_login
+                check_path: auth_login
+                default_target_path: home_index    # Ensure this line points to the correct route name
+                always_use_default_target_path: true   # Ensure this line is present
+            logout:
+                path: auth_logout
+                target: auth_index
 
-    access_control: []
+    # access_control:
+    #     - { path: ^/admin, roles: ROLE_ADMIN }
+    #     - { path: ^/freelancer, roles: ROLE_FREELANCER }
+    #     - { path: ^/client, roles: ROLE_CLIENT }

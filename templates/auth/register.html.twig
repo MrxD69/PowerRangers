@@ -1,35 +1,37 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Sign Up{% endblock %}
+{% block title %}Register{% endblock %}
 
 {% block body %}
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <h2 class="text-center mb-4">Sign Up</h2>
-                <form method="post" action="{{ path('register') }}">
-                    <div class="form-group">
-                        <label for="role">I am signing up as:</label>
-                        <select name="role" id="role" class="form-control">
-                            <option value="ROLE_CLIENT">Client</option>
-                            <option value="ROLE_FREELANCER">Freelancer</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email:</label>
-                        <input type="email" name="email" id="email" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Password:</label>
-                        <input type="password" name="password" id="password" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="confirm_password">Confirm Password:</label>
-                        <input type="password" name="confirm_password" id="confirm_password" class="form-control" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
-                </form>
-            </div>
+    <h1>Register</h1>
+    <div>
+        {{ form_start(registrationForm) }}
+        <!-- Name input -->
+        <div class="form-outline mb-4">
+            {{ form_widget(registrationForm.name, { 'attr': {'class': 'form-control', 'id': 'registerName'} }) }}
+            <label class="form-label" for="registerName">Name</label>
         </div>
+
+        <!-- Email input -->
+        <div class="form-outline mb-4">
+            {{ form_widget(registrationForm.email, { 'attr': {'class': 'form-control', 'id': 'registerEmail'} }) }}
+            <label class="form-label" for="registerEmail">Email</label>
+        </div>
+
+        <!-- Password input -->
+        <div class="form-outline mb-4">
+            {{ form_widget(registrationForm.plainPassword.first, { 'attr': {'class': 'form-control', 'id': 'registerPassword'} }) }}
+            <label class="form-label" for="registerPassword">Password</label>
+        </div>
+
+        <!-- Confirm Password input -->
+        <div class="form-outline mb-4">
+            {{ form_widget(registrationForm.plainPassword.second, { 'attr': {'class': 'form-control', 'id': 'registerPasswordConfirm'} }) }}
+            <label class="form-label" for="registerPasswordConfirm">Confirm Password</label>
+        </div>
+
+        <!-- Submit button -->
+        <button type="submit" class="btn btn-primary btn-block">Register</button>
+        {{ form_end(registrationForm) }}
     </div>
 {% endblock %}
