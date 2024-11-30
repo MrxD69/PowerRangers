@@ -1,4 +1,16 @@
 {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+<div class="form-group">
+    {# Render label for 'Message' field #}
+    {{ form_label(form.Message) }}
+
+    {# Render input widget (field) for 'Message' with Bootstrap styling #}
+    {{ form_widget(form.Message, {'attr': {'class': 'form-control'}}) }}
+
+    {# Render any validation errors for the 'Message' field #}
+    {{ form_errors(form.Message) }}
+</div>
+
+{# Render submit button to save the form #}
+<button type="submit" class="btn btn-primary">Save</button>
+
 {{ form_end(form) }}

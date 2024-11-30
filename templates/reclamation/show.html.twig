@@ -3,10 +3,11 @@
 {% block title %}Reclamation{% endblock %}
 
 {% block body %}
-    <h1>Reclamation</h1>
+    <div class="container mt-4">
+        <h1>Reclamation Details</h1>
 
-    <table class="table">
-        <tbody>
+        <table class="table table-bordered">
+            <tbody>
             <tr>
                 <th>Id</th>
                 <td>{{ reclamation.id }}</td>
@@ -19,12 +20,23 @@
                 <th>Etat</th>
                 <td>{{ reclamation.Etat }}</td>
             </tr>
-        </tbody>
-    </table>
+            <tr>
+                <th>Message</th>
+                <td>{{ reclamation.Message }}</td>
+            </tr>
+            </tbody>
+        </table>
 
-    <a href="{{ path('app_reclamation_index') }}">back to list</a>
+        <div class="mt-3">
+            <a href="{{ path('app_reclamation_index') }}" class="btn btn-secondary btn-sm">
+                <i class="fas fa-arrow-left"></i> Back to list
+            </a>
 
-    <a href="{{ path('app_reclamation_edit', {'id': reclamation.id}) }}">edit</a>
+            <a href="{{ path('app_reclamation_edit', {'id': reclamation.id}) }}" class="btn btn-primary btn-sm">
+                <i class="fas fa-edit"></i> Edit
+            </a>
 
-    {{ include('reclamation/_delete_form.html.twig') }}
+            {{ include('reclamation/_delete_form.html.twig') }}
+        </div>
+    </div>
 {% endblock %}

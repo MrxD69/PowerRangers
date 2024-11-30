@@ -21,6 +21,12 @@ class Reponse
     #[ORM\JoinColumn(nullable: false)]
     private ?Reclamation $reclamation = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $Message = null;
+
+    #[ORM\ManyToOne]
+    private ?User $User = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -46,6 +52,30 @@ class Reponse
     public function setReclamation(?Reclamation $reclamation): static
     {
         $this->reclamation = $reclamation;
+
+        return $this;
+    }
+
+    public function getMessage(): ?string
+    {
+        return $this->Message;
+    }
+
+    public function setMessage(string $Message): static
+    {
+        $this->Message = $Message;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->User;
+    }
+
+    public function setUser(?User $User): static
+    {
+        $this->User = $User;
 
         return $this;
     }

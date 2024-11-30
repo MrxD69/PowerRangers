@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Reclamation;
 use App\Entity\Reponse;
-use App\Form\Reponse1Type;
+use App\Form\Reponse2Type;
+use App\Repository\ReclamationRepository;
 use App\Repository\ReponseRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,7 +14,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/reponse')]
-final class ReponseController extends AbstractController{
+final class ReponseController extends AbstractController
+{
     #[Route(name: 'app_reponse_index', methods: ['GET'])]
     public function index(ReponseRepository $reponseRepository): Response
     {
@@ -21,11 +24,35 @@ final class ReponseController extends AbstractController{
         ]);
     }
 
-    #[Route('/new', name: 'app_reponse_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/l', name: 'app_reclamationc', methods: ['GET'])]
+    public function indexp(ReclamationRepository $reclamationRepository): Response
+    {
+        return $this->render('reponse/indexRl.html.twig', [
+            'reclamations' => $reclamationRepository->findAll(),
+        ]);
+    }
+
+    #[Route('/{lid}', name: 'app_reponse_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager, $lid): Response
     {
         $reponse = new Reponse();
-        $form = $this->createForm(Reponse1Type::class, $reponse);
+        $reponse->setDate(new \DateTime('today'));
+
+        // Fetch the Reclamation object corresponding to the given ID
+        $reclamation = $entityManager->getRepository(Reclamation::class)->find($lid);
+
+        // Check if a Reclamation object was found
+        if (!$reclamation) {
+            throw $this->createNotFoundException('Reclamation not found for ID ' . $lid);
+        }
+
+        // Set the etat attribute of the Reclamation object to true
+        $reclamation->setEtat("traité");
+
+        // Set the Reclamation property with the fetched Reclamation object
+        $reponse->setReclamation($reclamation);
+
+        $form = $this->createForm(Reponse2Type::class, $reponse);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -41,18 +68,25 @@ final class ReponseController extends AbstractController{
         ]);
     }
 
-    #[Route('/{id}', name: 'app_reponse_show', methods: ['GET'])]
+    #[Route('/reponse/{id}', name: 'app_reponse_show')]
     public function show(Reponse $reponse): Response
     {
+        // The $reponse variable is automatically passed due to Symfony's param converter
+        if (!$reponse) {
+            throw new NotFoundHttpException('Reponse not found for ID ' . $id);
+        }
+
         return $this->render('reponse/show.html.twig', [
             'reponse' => $reponse,
         ]);
     }
 
+
+
     #[Route('/{id}/edit', name: 'app_reponse_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Reponse $reponse, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(Reponse1Type::class, $reponse);
+        $form = $this->createForm(Reponse2Type::class, $reponse);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -70,11 +104,38 @@ final class ReponseController extends AbstractController{
     #[Route('/{id}', name: 'app_reponse_delete', methods: ['POST'])]
     public function delete(Request $request, Reponse $reponse, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$reponse->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete'.$reponse->getId(), $request->request->get('_token'))) {
             $entityManager->remove($reponse);
             $entityManager->flush();
         }
 
         return $this->redirectToRoute('app_reponse_index', [], Response::HTTP_SEE_OTHER);
+    }
+    #[Route('/reponse/{id}/delete', name: 'app_reponse_del', methods: ['POST', 'GET'])]
+    public function del(int $id, EntityManagerInterface $entityManager, Request $request): Response
+    {
+        // Find the Reponse entity by ID
+        $reponse = $entityManager->getRepository(Reponse::class)->find($id);
+
+        if (!$reponse) {
+            throw new NotFoundHttpException("Reponse not found for ID $id");
+        }
+
+        // Validate CSRF token if the request is a POST
+        if ($request->isMethod('POST')) {
+            $submittedToken = $request->request->get('_token');
+
+            if (!$this->isCsrfTokenValid('delete' . $reponse->getId(), $submittedToken)) {
+                return $this->redirectToRoute('app_reponse_index');
+            }
+        }
+
+        // Remove the entity
+        $entityManager->remove($reponse);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Reponse deleted successfully.');
+
+        return $this->redirectToRoute('app_reponse_index');
     }
 }

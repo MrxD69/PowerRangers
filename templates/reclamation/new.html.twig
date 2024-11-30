@@ -1,11 +1,41 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Reclamation{% endblock %}
+{% block title %}Nouvelle Réclamation{% endblock %}
 
 {% block body %}
-    <h1>Create new Reclamation</h1>
+    <div class="container mt-5">
+        <h1 class="mb-4">Créer une Nouvelle Réclamation</h1>
 
-    {{ include('reclamation/_form.html.twig') }}
+        <div class="card shadow-sm">
+            <div class="card-body">
+                {{ form_start(form) }}
 
-    <a href="{{ path('app_reclamation_index') }}">back to list</a>
+                <div class="form-group">
+                    {{ form_label(form.Message) }}
+                    {{ form_widget(form.Message, {'attr': {'class': 'form-control'}}) }}
+
+                    <!-- Display validation errors below the input -->
+                    {% for error in form.Message.vars.errors %}
+                        <div class="text-danger">{{ error.message }}</div>
+                    {% endfor %}
+
+                    <!-- Show the min/max length info -->
+                    <small class="form-text text-muted">
+                        Le message doit être compris entre 10 et 30 caractères.
+                    </small>
+                </div>
+
+                {{ form_row(form.Projet) }}
+
+                <button type="submit" class="btn btn-primary">Créer</button>
+                {{ form_end(form) }}
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <a href="{{ path('app_reclamation_index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Retour à la liste
+            </a>
+        </div>
+    </div>
 {% endblock %}
