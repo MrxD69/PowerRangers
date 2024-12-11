@@ -6,6 +6,7 @@ use App\Entity\Participant;
 use App\Form\ParticipantType;
 use App\Repository\ParticipantRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,10 +15,20 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/participant')]
 final class ParticipantController extends AbstractController{
     #[Route(name: 'app_participant_index', methods: ['GET'])]
-    public function index(ParticipantRepository $participantRepository): Response
+    public function index(Request $request, PaginatorInterface $paginator, ParticipantRepository $participantRepository): Response
     {
+        // Récupère tous les participants
+        $participantsQuery = $participantRepository->createQueryBuilder('p')->getQuery();
+
+        // Pagination des participants avec 4 éléments par page
+        $pagination = $paginator->paginate(
+            $participantsQuery, // La query que nous voulons paginer
+            $request->query->getInt('page', 1), // Page actuelle
+            4 // Nombre d'éléments par page
+        );
+
         return $this->render('participant/index.html.twig', [
-            'participants' => $participantRepository->findAll(),
+            'pagination' => $pagination,
         ]);
     }
 
@@ -77,4 +88,5 @@ final class ParticipantController extends AbstractController{
 
         return $this->redirectToRoute('app_participant_index', [], Response::HTTP_SEE_OTHER);
     }
+
 }

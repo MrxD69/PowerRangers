@@ -8,7 +8,7 @@
 
     <div class="container">
         <div class="row">
-            {% for participant in participants %}
+            {% for participant in pagination %}
                 <div class="col-lg-4 col-md-6 mb-4">
                     <div class="single-schedules-inner card shadow-sm">
                         <h5 class="card-title px-3 mt-3">{{ participant.nom }} {{ participant.prenom }}</h5>
@@ -34,4 +34,11 @@
     <div class="text-center mt-4">
         <a href="{{ path('app_participant_new') }}" class="btn btn-success">Créer un nouveau participant</a>
     </div>
+
+    <div class="pagination mt-4">
+        <!-- Pagination controls -->
+        {{ knp_pagination_render(pagination) }}
+    </div>
+
 {% endblock %}
+
