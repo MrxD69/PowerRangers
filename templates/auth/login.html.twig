@@ -1,4 +1,24 @@
-{% extends 'base.html.twig' %}
-{% block title %}{{ 'login.html.twig'|capitalize }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/forms.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+{% endblock %}
+
 {% block body %}
+    <div class="wrapper">
+        <div class="title"><span>Login Form</span></div>
+        <form action="{{ path('app_login') }}" method="POST">
+            <div class="row">
+                <i class="fas fa-envelope"></i>
+                <input type="text" name="email" placeholder="Email or Phone" required />
+            </div>
+            <div class="row">
+                <i class="fas fa-lock"></i>
+                <input type="password" name="password" placeholder="Password" required />
+            </div>
+            <div class="row button">
+                <input type="submit" value="Login" />
+            </div>
+            <div class="signup-link">Not a member? <a href="{{ path('app_register') }}">Signup now</a></div>
+        </form>
+    </div>
 {% endblock %}

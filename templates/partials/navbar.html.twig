@@ -3,10 +3,9 @@
     <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
         <span class="navbar-toggler-icon"></span>
     </button>
-    <div id="navbarCollapse" class="collapse navbar-collapse justify-content-start">
+    <div id="navbarCollapse" class="collapse navbar-collapse justify-content-between">
         <div class="navbar-nav">
             <a href="{{ path('home_index') }}" class="nav-item nav-link">Home</a>
-{#            <a href="{{ path('about_page') }}" class="nav-item nav-link">About</a>#}
             <div class="nav-item dropdown">
                 <a href="#" data-toggle="dropdown" class="nav-item nav-link dropdown-toggle">Services</a>
                 <div class="dropdown-menu">
@@ -16,21 +15,24 @@
                     <a href="#" class="dropdown-item">Digital Marketing</a>
                 </div>
             </div>
-            <a href="" class="nav-item nav-link">Pricing</a>
-            <a href="" class="nav-item nav-link">Blog</a>
-            <a href="" class="nav-item nav-link">Contact</a>
+            <a href="#" class="nav-item nav-link">Pricing</a>
+            <a href="#" class="nav-item nav-link">Blog</a>
+            <a href="#" class="nav-item nav-link">Contact</a>
         </div>
         <form class="navbar-form form-inline search-form">
             <div class="input-group">
                 <input type="text" class="form-control" placeholder="Search...">
                 <span class="input-group-btn">
-                    <button type="button" class="btn btn-default"><i class="fa fa-search"></i></button>
-                </span>
+            <button type="button" class="btn btn-default">
+                <i class="fa fa-search"></i> <!-- Add Font Awesome icon -->
+            </button>
+        </span>
             </div>
         </form>
-        <div class="navbar-nav ml-auto">
-            <a href="" class="btn btn-outline-primary mr-2">Login</a>
-            <a href="" class="btn btn-primary">Sign Up</a>
+
+        <div class="navbar-nav auth-buttons">
+            <a href="{{ path('app_login') }}" class="btn btn-outline-primary mr-2">Login</a>
+            <a href="{{ path('app_register') }}" class="btn btn-primary">Sign Up</a>
         </div>
     </div>
 </nav>
