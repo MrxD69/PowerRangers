@@ -3,10 +3,18 @@
 {% block title %}Evenement index{% endblock %}
 
 {% block body %}
-
     <h1 class="text-center my-4">Evenements</h1>
 
     <div class="container">
+        <!-- Formulaire de recherche -->
+        <form method="get" action="{{ path('app_evenement_index') }}" class="mb-4">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" placeholder="Rechercher un événement" value="{{ search }}">
+                <button type="submit" class="btn btn-primary">Rechercher</button>
+            </div>
+        </form>
+
+        <!-- Liste des événements -->
         <div class="row">
             {% for evenement in evenements %}
                 <div class="col-lg-4 col-md-6 mb-4">
@@ -32,9 +40,10 @@
                 </div>
             {% endfor %}
         </div>
-    </div>
 
-    <div class="text-center mt-4">
-        <a href="{{ path('app_evenement_new') }}" class="btn btn-success">Créer un nouvel événement</a>
+        <div class="text-center mt-4">
+            <a href="{{ path('app_evenement_new') }}" class="btn btn-success">Créer un nouvel événement</a>
+            <a href="{{ path('app_participant_new') }}" class="btn btn-success">Participer</a>
+        </div>
     </div>
 {% endblock %}

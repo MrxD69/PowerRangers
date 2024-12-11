@@ -28,6 +28,26 @@ class Participant
     #[ORM\Column]
     private ?int $num_telephone = null;
 
+    // Supprimez cette ligne, car la clé étrangère sera gérée par Doctrine automatiquement
+    // #[ORM\Column]
+    // private ?int $id_Event = null;
+
+    #[ORM\ManyToOne(targetEntity: Evenement::class)]
+    #[ORM\JoinColumn(name: "id_event", referencedColumnName: "id", nullable: false)] // La colonne de la clé étrangère
+    private ?Evenement $evenement = null;
+
+    public function getEvenement(): ?Evenement
+    {
+        return $this->evenement;
+    }
+
+    public function setEvenement(?Evenement $evenement): self
+    {
+        $this->evenement = $evenement;
+
+        return $this;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
