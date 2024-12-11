@@ -7,10 +7,13 @@ use App\Entity\Reponse;
 use App\Form\Reponse2Type;
 use App\Repository\ReclamationRepository;
 use App\Repository\ReponseRepository;
+use App\Service\GoogleTranslatorService;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/reponse')]
@@ -25,10 +28,22 @@ final class ReponseController extends AbstractController
     }
 
     #[Route('/l', name: 'app_reclamationc', methods: ['GET'])]
-    public function indexp(ReclamationRepository $reclamationRepository): Response
+    public function indexp(Request $request, PaginatorInterface $paginator, ReclamationRepository $reclamationRepository): Response
     {
+
+        // Get all reclamations
+        $reclamations = $reclamationRepository->findAll();
+
+        // Paginate the reclamations with 4 items per page
+        $pagination = $paginator->paginate(
+            $reclamations,
+            $request->query->getInt('page', 1),
+            4 // Number of items per page
+        );
+
         return $this->render('reponse/indexRl.html.twig', [
-            'reclamations' => $reclamationRepository->findAll(),
+            'pagination' => $pagination,
+            'hasPastDueReclamations' => !empty($alerts), // Flag indicating past due reclamations exist
         ]);
     }
 
@@ -71,11 +86,6 @@ final class ReponseController extends AbstractController
     #[Route('/reponse/{id}', name: 'app_reponse_show')]
     public function show(Reponse $reponse): Response
     {
-        // The $reponse variable is automatically passed due to Symfony's param converter
-        if (!$reponse) {
-            throw new NotFoundHttpException('Reponse not found for ID ' . $id);
-        }
-
         return $this->render('reponse/show.html.twig', [
             'reponse' => $reponse,
         ]);
@@ -138,4 +148,19 @@ final class ReponseController extends AbstractController
 
         return $this->redirectToRoute('app_reponse_index');
     }
+    #[Route('/translate/{idCommentaire}', name: 'app_commentaire_translate', methods: ['POST'])]
+    public function translate(Request $request, GoogleTranslatorService $translator, int $idCommentaire): Response
+    {
+        // Retrieve parameters from the request
+        $langFrom = 'fr'; // Assuming comments are in French
+        $langTo = 'ar';   // Target language is English
+        $commentText = $request->request->get('comment_text');
+
+        // Call translation service
+        $translatedComment = $translator->translate($langFrom, $langTo, $commentText);
+
+        // Return translated comment as JSON response
+        return $this->json(['translated_comment' => $translatedComment]);
+    }
+
 }

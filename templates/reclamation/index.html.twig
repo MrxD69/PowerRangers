@@ -5,8 +5,6 @@
 {% block body %}
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
@@ -21,10 +19,13 @@
             </div>
             <div class="col-md-9">
                 <div class="contact-form">
+                    <h1>Reclamation</h1>
+                    <input type="text" id="searchInput" class="form-control mb-3" placeholder="Search for reclamation...">
+                    <br>
+                    <!-- <p>Total Reclamations: {{ reclamations|length }}</p> -->
 
-
-                    <p class="mt-2">Total: <strong>{{ reclamations|length }}</strong> reclamations found</p>
-
+                    <!-- Form for deleting multiple reclamations -->
+                    <form id="deleteForm" action="{{ path('app_reclamation_delete_multiple') }}" method="post">
                         <table class="table table-hover">
                             <thead>
                             <tr>
@@ -51,12 +52,11 @@
 
                                         <form action="{{ path('app_reclamation_delete', {'id': reclamation.id}) }}" method="post" style="display: inline;">
                                             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reclamation.id) }}">
-                                            <button class="btn btn-danger btn-sm"
+                                            <button type="submit" class="btn btn-sm btn-primary" style="width: 100px; background-color: maroon;"
                                                     {{ reclamation.etat == 'non traité' ? '' : 'disabled' }}
-                                                    type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette réclamation ?')">Supprimer
+                                                    onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette réclamation ?')">Supprimer
                                             </button>
                                         </form>
-
                                     </td>
                                 </tr>
                             {% else %}
@@ -67,11 +67,57 @@
                             </tbody>
                         </table>
 
-
-                        <a href="{{ path('app_reclamation_new') }}" class="btn btn-success mt-3">Ajouter Reclamation</a>
+                        <!-- "Delete Multiple" Button -->
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete_multiple') }}">
+                        <button type="submit"  class="btn btn-success mt-3">Supprimer tous</button>
                     </form>
+
+                    <a href="{{ path('app_reclamation_new') }}" class="btn btn-success mt-3">Ajouter Reclamation</a>
+
+                    <!-- Tableau Statistique -->
+                    <div class="mt-5">
+                        <h2>Reclamation Statistics</h2>
+                        <table class="table table-bordered">
+                            <thead class="thead-light">
+                            <tr>
+                                <th>Total Reclamations</th>
+                                <th>Reclamations Traitées</th>
+                                <th>Reclamations Non Traitées</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>{{ reclamations|length }}</td>
+                                <td>{{ reclamations|filter(r => r.etat == 'traité')|length }}</td>
+                                <td>{{ reclamations|filter(r => r.etat == 'non traité')|length }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        $(document).ready(function() {
+            // Select/Deselect All checkboxes
+            $('#select-all').click(function() {
+                $('input[name="selectedIds[]"]').prop('checked', this.checked);
+            });
+
+            $('#searchInput').on('input', function() {
+                var searchText = $(this).val().toLowerCase();
+                $('table tbody tr').each(function() {
+                    var rowData = $(this).text().toLowerCase();
+                    if (rowData.indexOf(searchText) === -1) {
+                        $(this).hide();
+                    } else {
+                        $(this).show();
+                    }
+                });
+            });
+        });
+    </script>
+
 {% endblock %}

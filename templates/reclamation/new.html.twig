@@ -23,6 +23,9 @@
                     <small class="form-text text-muted">
                         Le message doit être compris entre 10 et 30 caractères.
                     </small>
+                    <p class="alert alert-info">
+                        Les messages contenant des mots interdits seront automatiquement bloqués.
+                    </p>
                 </div>
 
                 {{ form_row(form.Projet) }}
@@ -38,4 +41,6 @@
             </a>
         </div>
     </div>
+
+
 {% endblock %}

@@ -10,15 +10,25 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
+use Symfony\UX\Chartjs\Model\Chart;
+
 
 #[Route('/reclamation')]
-final class ReclamationController extends AbstractController{
-    #[Route(name: 'app_reclamation_index', methods: ['GET'])]
-    public function index(ReclamationRepository $reclamationRepository): Response
+final class ReclamationController extends AbstractController
+{
+    // Function to filter bad words
+    private function filterBadWords(string $text): string
     {
-        return $this->render('reclamation/index.html.twig', [
-            'reclamations' => $reclamationRepository->findAll(),
-        ]);
+        $badWords = ["bad1", "bad2", "bad3", "bad4", "bad5"];
+        foreach ($badWords as $word) {
+            // Create a regex pattern for each bad word
+            $pattern = "/\b" . preg_quote($word, '/') . "\b/i"; // Case-insensitive match
+            // Replace bad words with asterisks
+            $text = preg_replace($pattern, "****", $text);
+        }
+
+        return $text;
     }
 
     #[Route('/new', name: 'app_reclamation_new', methods: ['GET', 'POST'])]
@@ -32,6 +42,16 @@ final class ReclamationController extends AbstractController{
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Filter bad words in the Message before saving
+            $message = $reclamation->getMessage();
+            if ($message) {
+                $filteredMessage = $this->filterBadWords($message);
+                $reclamation->setMessage($filteredMessage); // Ensure we update the Message field after filtering
+            }
+
+            // Debug: check if the message was filtered
+            // dd($reclamation->getMessage()); // Uncomment to debug the final message
+
             $entityManager->persist($reclamation);
             $entityManager->flush();
 
@@ -41,6 +61,14 @@ final class ReclamationController extends AbstractController{
         return $this->render('reclamation/new.html.twig', [
             'reclamation' => $reclamation,
             'form' => $form,
+        ]);
+    }
+
+    #[Route(name: 'app_reclamation_index', methods: ['GET'])]
+    public function index(ReclamationRepository $reclamationRepository): Response
+    {
+        return $this->render('reclamation/index.html.twig', [
+            'reclamations' => $reclamationRepository->findAll(),
         ]);
     }
 
@@ -69,6 +97,7 @@ final class ReclamationController extends AbstractController{
             'form' => $form,
         ]);
     }
+
     #[Route('/l/{id}', name: 'app_reclamation_deletee', methods: ['POST'])]
     public function deletee(Request $request, Reclamation $reclamation, EntityManagerInterface $entityManager): Response
     {
@@ -79,6 +108,7 @@ final class ReclamationController extends AbstractController{
 
         return $this->redirectToRoute('app_reclamationc', [], Response::HTTP_SEE_OTHER);
     }
+
     #[Route('/{id}', name: 'app_reclamation_delete', methods: ['POST'])]
     public function delete(Request $request, Reclamation $reclamation, EntityManagerInterface $entityManager): Response
     {
@@ -90,39 +120,98 @@ final class ReclamationController extends AbstractController{
         return $this->redirectToRoute('app_reclamation_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/delete-selected', name: 'app_reclamation_delete_selected', methods: ['POST'])]
-    public function deleteSelected(Request $request, ReclamationRepository $reclamationRepository, EntityManagerInterface $entityManager): Response {
-        $selectedIds = $request->request->get('selectedIds', []);
 
-        if (empty($selectedIds)) {
-            $this->addFlash('error', 'No items selected for deletion.');
-            return $this->redirectToRoute('app_reclamation_index');
+    #[Route('/delete/multiple', name: 'app_reclamation_delete_multiple', methods: ['POST'])]
+    public function deleteMultiple(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        // Retrieve the selectedIds array safely
+        $selectedIds = $request->request->all('selectedIds');
+
+        if (!is_array($selectedIds)) {
+            // Handle the case where selectedIds is not an array (e.g., no checkboxes selected)
+            return $this->redirectToRoute('app_reclamation_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        // Fetch entities by IDs
-        $reclamations = $reclamationRepository->findBy(['id' => $selectedIds]);
+        // Ensure all IDs are valid scalar values
+        $selectedIds = array_filter($selectedIds, 'is_scalar');
 
-        if (count($reclamations) < count($selectedIds)) {
-            $missingIds = array_diff($selectedIds, array_map(fn($r) => $r->getId(), $reclamations));
-            $this->addFlash('error', 'Some items could not be found: ' . implode(', ', $missingIds));
-        }
-
-        foreach ($reclamations as $reclamation) {
-            $entityManager->remove($reclamation);
+        foreach ($selectedIds as $id) {
+            $reclamation = $entityManager->getRepository(Reclamation::class)->find($id);
+            if ($reclamation) {
+                $entityManager->remove($reclamation);
+            }
         }
 
         $entityManager->flush();
 
-        $this->addFlash('success', 'Selected items deleted successfully.');
-        return $this->redirectToRoute('app_reclamation_index');
+        return $this->redirectToRoute('app_reclamation_index', [], Response::HTTP_SEE_OTHER);
     }
 
 
+    #[Route('/reclamation/chart', name: 'app_reclamation_chart')]
+    public function reclamationChart(EntityManagerInterface $entityManager, ChartBuilderInterface $chartBuilder): Response
+    {
+        $reclamationRepository = $entityManager->getRepository(Reclamation::class);
 
+        // Fetch all reclamations
+        $reclamations = $reclamationRepository->findAll();
 
+        // Initialize an empty array to store 'etat' and their corresponding counts
+        $etatCounts = [];
 
+        // Count reclamations for each 'etat'
+        foreach ($reclamations as $reclamation) {
+            $etat = $reclamation->getEtat(); // Accessing the 'etat' of the reclamation
+            if (!isset($etatCounts[$etat])) {
+                $etatCounts[$etat] = 0;
+            }
+            $etatCounts[$etat]++;
+        }
 
+        // Extract 'etat' names and counts from the associative array
+        $labels = array_keys($etatCounts);
+        $data = array_values($etatCounts);
 
+        // Debug the data
+        dump($labels);
+        dump($data);
 
+        // Create the chart using ChartBuilder
+        $chart = $chartBuilder
+            ->createChart(Chart::TYPE_BAR) // Bar chart for 'etat' and counts
+            ->setData([
+                'labels' => $labels,
+                'datasets' => [
+                    [
+                        'label' => 'Number of Reclamations by Etat',
+                        'backgroundColor' => 'rgba(54, 162, 235, 0.2)', // Color of the bars
+                        'borderColor' => 'rgba(54, 162, 235, 1)', // Border color of bars
+                        'borderWidth' => 1,
+                        'data' => $data,
+                    ],
+                ],
+            ])
+            ->setOptions([
+                'scales' => [
+                    'y' => [
+                        'beginAtZero' => true,
+                        'title' => [
+                            'display' => true,
+                            'text' => 'Number of Reclamations',
+                        ],
+                    ],
+                    'x' => [
+                        'title' => [
+                            'display' => true,
+                            'text' => 'Etat',
+                        ],
+                    ],
+                ],
+            ]);
+
+        return $this->render('reclamation/chart.html.twig', [
+            'chart' => $chart,
+        ]);
+    }
 
 }
