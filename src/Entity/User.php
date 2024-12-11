@@ -2,99 +2,104 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use App\Enum\UserRole;
 
-#[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: '`user`')]
-#[ORM\HasLifecycleCallbacks]
-class User
+#[ORM\Entity(repositoryClass: "App\Repository\UserRepository")]
+#[ORM\Table(name: "user")]
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: "integer")]
+    private int $id;
 
-    #[ORM\Column(length: 255)]
-    private ?string $nom = null;
+    #[ORM\Column(type: "string", length: 255, unique: true)]
+    #[Assert\NotBlank]
+    #[Assert\Email]
+    private string $email;
 
-    #[ORM\Column(length: 255)]
-    private ?string $prenom = null;
+    #[ORM\Column(type: "string")]
+    #[Assert\NotBlank]
+    private string $password;
 
-    #[ORM\Column(length: 255, unique: true)]
-    private ?string $email = null;
+    #[ORM\Column(type: "string", length: 255)]
+    #[Assert\NotBlank]
+    private string $nom;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $tel = null;
+    #[ORM\Column(type: "string", length: 255)]
+    #[Assert\NotBlank]
+    private string $prenom;
 
-    #[ORM\Column(length: 255)]
-    private ?string $password = null;
+    #[ORM\Column(type: "string", length: 15, nullable: true)]
+    private ?string $tel;
 
-    #[ORM\Column(length: 255)]
-    private ?string $role = null;
+    #[ORM\Column(type: "string", enumType: UserRole::class)]
+    #[Assert\NotBlank]
+    private UserRole $role;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    #[ORM\Column(type: "text", nullable: true)]
+    private ?string $freelancerBio = null;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $updatedAt = null;
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    private ?string $clientCompany = null;
 
-    public function __construct()
-    {
-        $this->createdAt = new \DateTimeImmutable();
-    }
+    #[ORM\Column(type: "boolean", nullable: true)]
+    private ?bool $adminPrivileges = null;
 
-    #[ORM\PrePersist]
-    public function onPrePersist(): void
-    {
-        $this->createdAt = new \DateTimeImmutable();
-        $this->updatedAt = new \DateTimeImmutable();
-    }
+    #[ORM\Column(type: "string", nullable: true)]
+    private ?string $profilePicture = null;
 
-    #[ORM\PreUpdate]
-    public function onPreUpdate(): void
-    {
-        $this->updatedAt = new \DateTimeImmutable();
-    }
-
-    public function getId(): ?int
+    // Getters and setters
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getNom(): ?string
-    {
-        return $this->nom;
-    }
-
-    public function setNom(string $nom): static
-    {
-        $this->nom = $nom;
-
-        return $this;
-    }
-
-    public function getPrenom(): ?string
-    {
-        return $this->prenom;
-    }
-
-    public function setPrenom(string $prenom): static
-    {
-        $this->prenom = $prenom;
-
-        return $this;
-    }
-
-    public function getEmail(): ?string
+    public function getEmail(): string
     {
         return $this->email;
     }
 
-    public function setEmail(string $email): static
+    public function setEmail(string $email): self
     {
         $this->email = $email;
+        return $this;
+    }
 
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+        return $this;
+    }
+
+    public function getNom(): string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(string $nom): self
+    {
+        $this->nom = $nom;
+        return $this;
+    }
+
+    public function getPrenom(): string
+    {
+        return $this->prenom;
+    }
+
+    public function setPrenom(string $prenom): self
+    {
+        $this->prenom = $prenom;
         return $this;
     }
 
@@ -103,44 +108,80 @@ class User
         return $this->tel;
     }
 
-    public function setTel(?string $tel): static
+    public function setTel(?string $tel): self
     {
         $this->tel = $tel;
-
         return $this;
     }
 
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
-
-    public function setPassword(string $password): static
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
-    public function getRole(): ?string
+    public function getRole(): UserRole
     {
         return $this->role;
     }
 
-    public function setRole(string $role): static
+    public function setRole(UserRole $role): self
     {
         $this->role = $role;
-
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getFreelancerBio(): ?string
     {
-        return $this->createdAt;
+        return $this->freelancerBio;
     }
 
-    public function getUpdatedAt(): ?\DateTimeImmutable
+    public function setFreelancerBio(?string $freelancerBio): self
     {
-        return $this->updatedAt;
+        $this->freelancerBio = $freelancerBio;
+        return $this;
+    }
+
+    public function getClientCompany(): ?string
+    {
+        return $this->clientCompany;
+    }
+
+    public function setClientCompany(?string $clientCompany): self
+    {
+        $this->clientCompany = $clientCompany;
+        return $this;
+    }
+
+    public function hasAdminPrivileges(): ?bool
+    {
+        return $this->adminPrivileges;
+    }
+
+    public function setAdminPrivileges(?bool $adminPrivileges): self
+    {
+        $this->adminPrivileges = $adminPrivileges;
+        return $this;
+    }
+
+    public function getRoles(): array
+    {
+        // Symfony expects an array of roles
+        return [$this->role->value];
+    }
+
+    public function getSalt(): ?string
+    {
+        return null;
+    }
+
+    public function setProfilePicture(?string $profilePicture): self
+    {
+        $this->profilePicture = $profilePicture;
+        return $this;
+    }
+
+    public function eraseCredentials(): void
+    {
+        // If there are sensitive data fields, clear them here
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->email;
     }
 }
