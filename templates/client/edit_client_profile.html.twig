@@ -1,0 +1,103 @@
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/7.2.96/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="{{ asset('css/freelancer_profile.css') }}">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin-top: 20px;
+            color: #1a202c;
+            text-align: left;
+            background-color: #e2e8f0;
+        }
+        .main-body {
+            padding: 15px;
+        }
+        .card {
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px 0 rgba(0, 0, 0, .06);
+            background-color: #fff;
+            border-radius: .25rem;
+        }
+        .dropzone {
+            border: 2px dashed #16a085;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            transition: background-color 0.2s ease;
+        }
+        .dropzone.dragover {
+            background-color: #d4edda;
+        }
+        .hidden-input {
+            display: none;
+        }
+        .preview-img {
+            margin-top: 10px;
+            border-radius: 5px;
+            max-width: 100%;
+            height: auto;
+        }
+        .save-button-container {
+            text-align: left;
+            margin-top: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="main-body">
+            <h2 class="mb-4">Edit Profile</h2>
+
+            <form method="POST" action="{{ path('client/edit_client_profile') }}" enctype="multipart/form-data">
+                <div class="row gutters-sm">
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <div id="dropzone" class="dropzone">
+                                    <p>Drag & Drop to Upload Profile Picture</p>
+                                    <p>or</p>
+                                    <button type="button" id="upload-button" class="btn btn-outline-secondary btn-sm">Choose File</button>
+                                    <input type="file" id="profilePictureInput" name="profilePicture" class="hidden-input" accept="image/*">
+                                </div>
+                                <img id="previewImage" src="{{ user.profilePicture ?: asset('img/khalil.jpg') }}" alt="Profile Picture" class="preview-img">
+                            </div>
+                        </div>
+                        <div class="save-button-container">
+                            <button type="submit" class="btn btn-success">Save Changes</button>
+                            <a href="{{ path('home_index') }}" class="btn btn-primary ml-2">Return to Home</a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-8">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="nom">First Name</label>
+                                    <input type="text" name="nom" id="nom" value="{{ user.nom ?: '' }}" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="prenom">Last Name</label>
+                                    <input type="text" name="prenom" id="prenom" value="{{ user.prenom ?: '' }}" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" name="email" id="email" value="{{ user.email ?: '' }}" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">Phone</label>
+                                    <input type="text" name="phone" id="phone" value="{{ user.phone ?: '' }}" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="location">Location</label>
+                                    <input type="text" name="location" id="location" value="{{ user.location ?: '' }}" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

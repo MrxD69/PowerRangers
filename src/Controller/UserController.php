@@ -4,93 +4,173 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Enum\UserRole;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Services\UserService;
+use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 
-#[AsController]
-class UserController
+class UserController extends AbstractController
 {
-    private UserService $userService;
     private EntityManagerInterface $entityManager;
 
-    public function __construct(UserService $userService, EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager)
     {
-        $this->userService = $userService;
         $this->entityManager = $entityManager;
     }
 
-    #[Route('/user', name: 'get_all_users', methods: ['GET'])]
-    public function getAllUsers(): JsonResponse
-        {
-            $users = $this->userService->getAllUsers();
-            return new JsonResponse($users, Response::HTTP_OK);
+    #[Route('/freelancer/{id}/profile', name: 'get_freelancer_profile', methods: ['GET'])]
+    public function getFreelancerProfile(int $id): Response
+    {
+        $user = $this->entityManager->getRepository(User::class)->find($id);
+
+        if (!$user || $user->getRole() !== UserRole::ROLE_FREELANCER) {
+            return $this->render('errors/404.html.twig', [
+                'message' => 'Freelancer not found.'
+            ], Response::HTTP_NOT_FOUND);
         }
 
-    #[Route('/user/{id}', name: 'get_user_by_id', methods: ['GET'])]
-    public function getUserById(int $id): JsonResponse
-    {
-        $user = $this->userService->getUserById($id);
+        return $this->render('freelancer/freelancer_profile.html.twig', [
+            'user' => $user,
+        ]);
+    }
 
-        if($user){
-            return new JsonResponse(['message'=>'User not found'], Response::HTTP_NOT_FOUND);
+    #[Route('/freelancer/profile/edit', name: 'freelancer/edit_freelancer_profile', methods: ['GET', 'POST'])]
+    public function editFreelancerProfile(Request $request): Response
+    {
+        $user = $this->getUser();
+
+        if (!$user || $user->getRole() !== UserRole::ROLE_FREELANCER) {
+            return $this->redirectToRoute('home_index');
         }
-        return new JsonResponse($user, Response::HTTP_OK);
-    }
 
-    #[Route('/user', name: 'create_user', methods: ['POST'])]
-    public function createUser(Request $request): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
+        if ($request->isMethod('POST')) {
+            // Handle file upload for profile picture
+            $uploadedFile = $request->files->get('profilePicture');
+            if ($uploadedFile) {
+                $destination = $this->getParameter('profile_pictures_directory');
+                $newFilename = uniqid() . '.' . $uploadedFile->guessExtension();
 
-        try {
-            $user = $this->userService->createUser($data);
-            return new JsonResponse($user, Response::HTTP_CREATED);
-        } catch (\Exception $e) {
-            return new JsonResponse(['message' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
-        }
-    }
-
-    #[Route('/user/{id}/update', name: 'update_user', methods: ['PUT'])]
-    public function updateUser(int $id, Request $request): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
-
-        try {
-            $user = $this->userService->updateUser($id, $data);
-            return new JsonResponse($user, Response::HTTP_OK);
-        } catch (\Exception $e) {
-            return new JsonResponse(['message' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
-        }
-    }
-
-    #[Route('/user/{id}', name: 'delete_user', methods: ['DELETE'])]
-    public function deleteUser(int $id): JsonResponse
-    {
-        $this->userService->deleteUser($id);
-        return new JsonResponse(['message' => 'User deleted successfully'], Response::HTTP_OK);
-    }
-
-    #[Route('/user/{id}/role', name: 'update_user_role', methods: ['PATCH'])]
-    public function updateUserRole(int $id, Request $request): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
-
-        try {
-            $role = $data['role'] ?? null;
-            if (!in_array($role, UserRole::cases())) {
-                throw new \InvalidArgumentException('Invalid role provided');
+                try {
+                    $uploadedFile->move($destination, $newFilename);
+                    $user->setProfilePicture('/uploads/profile_pictures/' . $newFilename);
+                } catch (\Exception $e) {
+                    $this->addFlash('error', 'Failed to upload profile picture.');
+                    return $this->redirectToRoute('freelancer/edit_freelancer_profile');
+                }
             }
 
-            $user = $this->userService->updateUserRole($id, $role);
-            return new JsonResponse($user, Response::HTTP_OK);
-        } catch (\Exception $e) {
-            return new JsonResponse(['message' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            // Retrieve and validate other form data
+            $biography = $request->request->get('biography');
+            $location = $request->request->get('location');
+            $skills = $request->request->all('skills');
+            $phone = $request->request->get('phone');
+
+            // Social links
+            $twitter = $request->request->get('twitter');
+            $facebook = $request->request->get('facebook');
+            $instagram = $request->request->get('instagram');
+            $linkedin = $request->request->get('linkedin');
+            $github = $request->request->get('github');
+
+            // Process and validate `skills` array
+            $processedSkills = [];
+            if (is_array($skills)) {
+                foreach ($skills as $skill) {
+                    if (!empty($skill['name']) && isset($skill['progress'])) {
+                        $processedSkills[] = [
+                            'name' => $skill['name'],
+                            'progress' => (int)$skill['progress'],
+                        ];
+                    }
+                }
+            }
+
+            // Update the user entity
+            $user->setBiography($biography);
+            $user->setLocation($location);
+            $user->setSkills($processedSkills);
+            $user->setPhone($phone);
+            $user->setTwitter($twitter);
+            $user->setFacebook($facebook);
+            $user->setInstagram($instagram);
+            $user->setLinkedin($linkedin);
+            $user->setGithub($github);
+
+            // Save changes
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Profile updated successfully.');
+
+            return $this->redirectToRoute('get_freelancer_profile', ['id' => $user->getId()]);
         }
+
+        return $this->render('freelancer/edit_freelancer_profile.html.twig', [
+            'user' => $user,
+        ]);
     }
 
+    #[Route('/client/{id}/profile', name: 'get_client_profile', methods: ['GET'])]
+    public function getClientProfile(int $id): Response
+    {
+        $user = $this->entityManager->getRepository(User::class)->find($id);
+
+        if (!$user || $user->getRole() !== UserRole::ROLE_CLIENT) {
+            return $this->render('errors/404.html.twig', [
+                'message' => 'Client not found.'
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        return $this->render('client/client_profile.html.twig', [
+            'user' => $user,
+        ]);
+    }
+
+    #[Route('/client/profile/edit', name: 'client/edit_client_profile', methods: ['GET', 'POST'])]
+    public function editClientProfile(Request $request): Response
+    {
+        $user = $this->getUser();
+
+        if (!$user || $user->getRole() !== UserRole::ROLE_CLIENT) {
+            return $this->redirectToRoute('home_index');
+        }
+
+        if ($request->isMethod('POST')) {
+            // Handle file upload for profile picture
+            $uploadedFile = $request->files->get('profilePicture');
+            if ($uploadedFile) {
+                $destination = $this->getParameter('profile_pictures_directory');
+                $newFilename = uniqid() . '.' . $uploadedFile->guessExtension();
+
+                try {
+                    $uploadedFile->move($destination, $newFilename);
+                    $user->setProfilePicture('/uploads/profile_pictures/' . $newFilename);
+                } catch (\Exception $e) {
+                    $this->addFlash('error', 'Failed to upload profile picture.');
+                    return $this->redirectToRoute('client/edit_client_profile');
+                }
+            }
+
+            // Retrieve and validate form data
+            $phone = $request->request->get('phone');
+            $location = $request->request->get('location');
+
+            // Update the user entity
+            $user->setPhone($phone);
+            $user->setLocation($location);
+
+            // Save changes
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Profile updated successfully.');
+
+            return $this->redirectToRoute('get_client_profile', ['id' => $user->getId()]);
+        }
+
+        return $this->render('client/edit_client_profile.html.twig', [
+            'user' => $user,
+        ]);
+    }
 }

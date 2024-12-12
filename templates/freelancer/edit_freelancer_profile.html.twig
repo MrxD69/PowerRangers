@@ -1,0 +1,208 @@
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/7.2.96/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="{{ asset('css/freelancer_profile.css') }}">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin-top: 20px;
+            color: #1a202c;
+            text-align: left;
+            background-color: #e2e8f0;
+        }
+        .main-body {
+            padding: 15px;
+        }
+        .card {
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px 0 rgba(0, 0, 0, .06);
+            background-color: #fff;
+            border-radius: .25rem;
+        }
+        .dropzone {
+            border: 2px dashed #16a085;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            transition: background-color 0.2s ease;
+        }
+        .dropzone.dragover {
+            background-color: #d4edda;
+        }
+        .hidden-input {
+            display: none;
+        }
+        .preview-img {
+            margin-top: 10px;
+            border-radius: 5px;
+            max-width: 100%;
+            height: auto;
+        }
+        .save-button-container {
+            text-align: left;
+            margin-top: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="main-body">
+            <h2 class="mb-4">Edit Profile</h2>
+
+            <form method="POST" action="{{ path('freelancer/edit_freelancer_profile') }}" enctype="multipart/form-data">
+                <div class="row gutters-sm">
+                    <!-- Left Section -->
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <div id="dropzone" class="dropzone">
+                                    <p>Drag & Drop to Upload Profile Picture</p>
+                                    <p>or</p>
+                                    <button type="button" id="upload-button" class="btn btn-outline-secondary btn-sm">Choose File</button>
+                                    <input type="file" id="profilePictureInput" name="profilePicture" class="hidden-input" accept="image/*">
+                                </div>
+                                <img id="previewImage" src="{{ user.profilePicture ?: asset('img/khalil.jpg') }}" alt="Profile Picture" class="preview-img">
+                            </div>
+                        </div>
+                        <div class="save-button-container">
+                            <button type="submit" class="btn btn-success">Save Changes</button>
+                            <a href="{{ path('home_index') }}" class="btn btn-primary ml-2">Return to Home</a>
+                        </div>
+                    </div>
+
+                    <!-- Right Section -->
+                    <div class="col-md-8">
+                        <!-- Basic Information -->
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="nom">First Name</label>
+                                    <input type="text" name="nom" id="nom" value="{{ user.nom ?: '' }}" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="prenom">Last Name</label>
+                                    <input type="text" name="prenom" id="prenom" value="{{ user.prenom ?: '' }}" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" name="email" id="email" value="{{ user.email ?: '' }}" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">Phone</label>
+                                    <input type="text" name="phone" id="phone" value="{{ user.phone ?: '' }}" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="location">Location</label>
+                                    <input type="text" name="location" id="location" value="{{ user.location ?: '' }}" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="biography">Biography</label>
+                                    <textarea name="biography" id="biography" class="form-control">{{ user.biography ?: '' }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Social Media Section -->
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h6 class="d-flex align-items-center mb-3">Social Media Links</h6>
+                                <div class="form-group">
+                                    <label for="twitter">Twitter</label>
+                                    <input type="text" name="twitter" id="twitter" value="{{ user.twitter ?: '' }}" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="facebook">Facebook</label>
+                                    <input type="text" name="facebook" id="facebook" value="{{ user.facebook ?: '' }}" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="instagram">Instagram</label>
+                                    <input type="text" name="instagram" id="instagram" value="{{ user.instagram ?: '' }}" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="linkedin">LinkedIn</label>
+                                    <input type="text" name="linkedin" id="linkedin" value="{{ user.linkedin ?: '' }}" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="github">GitHub</label>
+                                    <input type="text" name="github" id="github" value="{{ user.github ?: '' }}" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Skills Section -->
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6 class="d-flex align-items-center mb-3">Edit Skills and Progress</h6>
+                                <div id="skills-container">
+                                    {% for skill in user.skills %}
+                                        <div class="form-group row align-items-center skill-row">
+                                            <div class="col-md-6">
+                                                <label for="skill-name-{{ loop.index }}">Skill</label>
+                                                <input type="text" name="skills[{{ loop.index }}][name]" id="skill-name-{{ loop.index }}" value="{{ skill.name }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="skill-progress-{{ loop.index }}">Progress</label>
+                                                <input type="number" name="skills[{{ loop.index }}][progress]" id="skill-progress-{{ loop.index }}" value="{{ skill.progress }}" class="form-control" min="0" max="100">
+                                            </div>
+                                            <div class="col-md-2 text-right">
+                                                <button type="button" class="btn btn-danger btn-sm remove-skill">Remove</button>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <button type="button" id="add-skill" class="btn btn-primary btn-sm mt-2">Add Skill</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const dropzone = document.getElementById('dropzone');
+            const input = document.getElementById('profilePictureInput');
+            const previewImage = document.getElementById('previewImage');
+            const uploadButton = document.getElementById('upload-button');
+
+            dropzone.addEventListener('dragover', function (e) {
+                e.preventDefault();
+                dropzone.classList.add('dragover');
+            });
+
+            dropzone.addEventListener('dragleave', function () {
+                dropzone.classList.remove('dragover');
+            });
+
+            dropzone.addEventListener('drop', function (e) {
+                e.preventDefault();
+                dropzone.classList.remove('dragover');
+                const file = e.dataTransfer.files[0];
+                handleFileUpload(file);
+            });
+
+            uploadButton.addEventListener('click', function () {
+                input.click();
+            });
+
+            input.addEventListener('change', function () {
+                const file = input.files[0];
+                handleFileUpload(file);
+            });
+
+            function handleFileUpload(file) {
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        previewImage.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    alert('Please upload a valid image file.');
+                }
+            }
+        });
+    </script>
+{% endblock %}

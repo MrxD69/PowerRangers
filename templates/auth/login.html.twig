@@ -9,16 +9,30 @@
         <form action="{{ path('app_login') }}" method="POST">
             <div class="row">
                 <i class="fas fa-envelope"></i>
-                <input type="text" name="email" placeholder="Email or Phone" required />
+                <input type="text" name="email" placeholder="Email" value="{{ last_username }}" required />
             </div>
             <div class="row">
                 <i class="fas fa-lock"></i>
                 <input type="password" name="password" placeholder="Password" required />
             </div>
+
+            <!-- Add the CSRF token -->
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" />
+
+            {% if error %}
+                <div class="row text-danger" style="margin-bottom: 10px;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>{{ error.messageKey|trans(error.messageData, 'security') }}</span>
+                </div>
+            {% endif %}
+
             <div class="row button">
                 <input type="submit" value="Login" />
             </div>
-            <div class="signup-link">Not a member? <a href="{{ path('app_register') }}">Signup now</a></div>
+            <div class="signup-link">
+                <a href="{{ path('app_forgot_password') }}">Forgot Password?</a>
+                <br>Not a member? <a href="{{ path('app_register') }}">Signup now</a>
+            </div>
         </form>
     </div>
 {% endblock %}

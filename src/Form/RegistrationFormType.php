@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\User;
+use App\Enum\UserRole;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -16,26 +17,27 @@ class RegistrationFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('email', EmailType::class, [
+                'label' => 'Email',
+            ])
             ->add('nom', TextType::class, [
                 'label' => 'Nom',
             ])
             ->add('prenom', TextType::class, [
                 'label' => 'Prenom',
             ])
-            ->add('email', EmailType::class, [
-                'label' => 'Email',
-            ])
             ->add('password', PasswordType::class, [
                 'label' => 'Password',
-                'mapped' => false, // Not mapped to the User entity
             ])
             ->add('role', ChoiceType::class, [
-                'label' => 'Role',
                 'choices' => [
-                    'User' => 'ROLE_USER',
-                    'Admin' => 'ROLE_ADMIN',
-                    'Freelancer' => 'ROLE_FREELANCER',
+                    'Client' => UserRole::ROLE_CLIENT,
+                    'Admin' => UserRole::ROLE_ADMIN,
+                    'Freelancer' => UserRole::ROLE_FREELANCER,
                 ],
+                'label' => 'Role',
+                'expanded' => false, // Dropdown
+                'multiple' => false, // Single choice
             ]);
     }
 

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Page Not Found</title>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+        }
+        .error-template {
+            padding: 40px 15px;
+            text-align: center;
+        }
+        .error-actions {
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+        .error-actions .btn {
+            margin-right: 10px;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        h1 {
+            font-size: 50px;
+            color: #29c68c;
+        }
+        h2 {
+            font-size: 40px;
+            color: #666;
+        }
+        .error-details {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #999;
+        }
+        .btn-primary {
+            background-color: #29c68c;
+            border-color: #29c68c;
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .btn-primary:hover, .btn-primary:focus {
+            background-color: #26bb84;
+            border-color: #26bb84;
+        }
+        .btn-default {
+            background-color: #f5f5f5;
+            border-color: #dfe3e8;
+            color: #666;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .btn-default:hover, .btn-default:focus {
+            background-color: #e0e0e0;
+            border-color: #d0d0d0;
+        }
+    </style>
+</head>
+<body>
+<div class="container text-center">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="error-template">
+                <h1>Oops!</h1>
+                <h2>404 Not Found</h2>
+                <div class="error-details">
+                    Sorry, an error has occurred, the requested page was not found!
+                </div>
+                <div class="error-actions">
+                    <a href="{{ path('home_index') }}" class="btn btn-primary btn-lg">
+                        Take Me Home
+                    </a>
+                    <a href="{{ path('contact') }}" class="btn btn-default btn-lg">
+                        Contact Support
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

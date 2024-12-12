@@ -1,13 +1,13 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a href="{{ path('home_index') }}" class="navbar-brand">Power<b>Rangers</b></a>
-    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div id="navbarCollapse" class="collapse navbar-collapse justify-content-between">
         <div class="navbar-nav">
             <a href="{{ path('home_index') }}" class="nav-item nav-link">Home</a>
             <div class="nav-item dropdown">
-                <a href="#" data-toggle="dropdown" class="nav-item nav-link dropdown-toggle">Services</a>
+                <a href="#" data-bs-toggle="dropdown" class="nav-item nav-link dropdown-toggle">Services</a>
                 <div class="dropdown-menu">
                     <a href="#" class="dropdown-item">Web Design</a>
                     <a href="#" class="dropdown-item">Web Development</a>
@@ -23,16 +23,31 @@
             <div class="input-group">
                 <input type="text" class="form-control" placeholder="Search...">
                 <span class="input-group-btn">
-            <button type="button" class="btn btn-default">
-                <i class="fa fa-search"></i> <!-- Add Font Awesome icon -->
-            </button>
-        </span>
+                    <button type="button" class="btn btn-default">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </span>
             </div>
         </form>
-
         <div class="navbar-nav auth-buttons">
-            <a href="{{ path('app_login') }}" class="btn btn-outline-primary mr-2">Login</a>
-            <a href="{{ path('app_register') }}" class="btn btn-primary">Sign Up</a>
+            {% if app.user %}
+                <!-- Show when user is logged in -->
+                <a href="{% if app.user.role.value == 'ROLE_FREELANCER' %}
+                              {{ path('get_freelancer_profile', { id: app.user.id }) }}
+                          {% elseif app.user.role.value == 'ROLE_CLIENT' %}
+                              {{ path('get_client_profile', { id: app.user.id }) }}
+                          {% else %}
+                              {{ path('home_index') }}
+                          {% endif %}"
+                   class="btn btn-outline-primary mr-2">
+                    {{ app.user.nom }}'s Profile
+                </a>
+                <a href="{{ path('app_logout') }}" class="btn btn-danger">Logout</a>
+            {% else %}
+                <!-- Show when user is not logged in -->
+                <a href="{{ path('app_login') }}" class="btn btn-outline-primary mr-2">Login</a>
+                <a href="{{ path('app_register') }}" class="btn btn-primary">Sign Up</a>
+            {% endif %}
         </div>
     </div>
 </nav>
