@@ -1,0 +1,15 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+# config/routes.yaml
+project_search:
+    path: /search-project
+    controller: App\Controller\ProjectDbController::search
+
+# config/routes.yaml
+app_project_db_show:
+    path: /project/db/{id}
+    controller: App\Controller\ProjectDbController::show
+    methods: GET

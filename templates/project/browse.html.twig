@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Browse Projects{% endblock %}
+
+{% block body %}
+    <div class="container">
+
+        <!-- Page Heading -->
+        <h1 class="my-4">{{ page_title }}
+            <small>{{ page_subtitle }}</small>
+        </h1>
+
+        <!-- Project Rows -->
+        <div class="row">
+            {% for project in projects %}
+                <div class="col-lg-4 col-sm-6 mb-4">
+                    <div class="card h-100">
+                        <a href="{{ path('project_details', {id: project.id}) }}">
+                            <img class="card-img-top" src="{{ asset(project.image) }}" alt="Project Image">
+                        </a>
+                        <div class="card-body">
+                            <h4 class="card-title">
+                                <a href="{{ path('project_details', {id: project.id}) }}">{{ project.title }}</a>
+                            </h4>
+                            <p class="card-text">{{ project.description|slice(0, 100) ~ '...' }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <p class="text-center">No projects found.</p>
+            {% endfor %}
+        </div>
+        <!-- /.row -->
+
+        <!-- Pagination -->
+        <ul class="pagination justify-content-center">
+            {% for page in 1..total_pages %}
+                <li class="page-item {% if page == current_page %}active{% endif %}">
+                    <a class="page-link" href="{{ path('project_browse', {page: page}) }}">{{ page }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+
+    </div>
+{% endblock %}

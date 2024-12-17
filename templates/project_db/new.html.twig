@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Project{% endblock %}
+
+{% block body %}
+    <!-- Page Content -->
+    <div class="container mt-5">
+
+        <!-- Page Heading -->
+        <h1 class="my-4 text-success">Create New Project</h1>
+
+        <!-- Form for Creating a New Project -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-success text-white">
+                        <h3 class="my-3">Project Information</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{{ path('app_project_db_new') }}" novalidate>
+                            {{ include('project_db/_form2.html.twig') }}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="mt-4 text-center">
+            <a href="{{ path('app_project_db_index') }}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+        </div>
+    </div>
+{% endblock %}
