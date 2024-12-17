@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ReponseRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ReponseRepository::class)]
 class Reponse
@@ -22,6 +23,13 @@ class Reponse
     private ?Reclamation $reclamation = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le message ne peut pas être vide.')]
+    #[Assert\Length(
+        min: 10,
+        max: 30,
+        minMessage: 'Le message doit contenir au moins {{ limit }} caractères.',
+        maxMessage: 'Le message ne peut pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $Message = null;
 
     #[ORM\ManyToOne]

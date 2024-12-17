@@ -31,14 +31,13 @@ final class ReponseController extends AbstractController
     public function indexp(Request $request, PaginatorInterface $paginator, ReclamationRepository $reclamationRepository): Response
     {
 
-        // Get all reclamations
         $reclamations = $reclamationRepository->findAll();
 
         // Paginate the reclamations with 4 items per page
         $pagination = $paginator->paginate(
             $reclamations,
             $request->query->getInt('page', 1),
-            4 // Number of items per page
+            4
         );
 
         return $this->render('reponse/indexRl.html.twig', [
@@ -151,15 +150,14 @@ final class ReponseController extends AbstractController
     #[Route('/translate/{idCommentaire}', name: 'app_commentaire_translate', methods: ['POST'])]
     public function translate(Request $request, GoogleTranslatorService $translator, int $idCommentaire): Response
     {
-        // Retrieve parameters from the request
-        $langFrom = 'fr'; // Assuming comments are in French
-        $langTo = 'ar';   // Target language is English
+
+        $langFrom = 'fr';
+        $langTo = 'ar';
         $commentText = $request->request->get('comment_text');
 
-        // Call translation service
+
         $translatedComment = $translator->translate($langFrom, $langTo, $commentText);
 
-        // Return translated comment as JSON response
         return $this->json(['translated_comment' => $translatedComment]);
     }
 

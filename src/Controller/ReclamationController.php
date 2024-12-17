@@ -17,14 +17,12 @@ use Symfony\UX\Chartjs\Model\Chart;
 #[Route('/reclamation')]
 final class ReclamationController extends AbstractController
 {
-    // Function to filter bad words
     private function filterBadWords(string $text): string
     {
         $badWords = ["bad1", "bad2", "bad3", "bad4", "bad5"];
         foreach ($badWords as $word) {
-            // Create a regex pattern for each bad word
-            $pattern = "/\b" . preg_quote($word, '/') . "\b/i"; // Case-insensitive match
-            // Replace bad words with asterisks
+
+            $pattern = "/\b" . preg_quote($word, '/') . "\b/i";
             $text = preg_replace($pattern, "****", $text);
         }
 
@@ -42,15 +40,13 @@ final class ReclamationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Filter bad words in the Message before saving
+
             $message = $reclamation->getMessage();
             if ($message) {
                 $filteredMessage = $this->filterBadWords($message);
-                $reclamation->setMessage($filteredMessage); // Ensure we update the Message field after filtering
+                $reclamation->setMessage($filteredMessage);
             }
 
-            // Debug: check if the message was filtered
-            // dd($reclamation->getMessage()); // Uncomment to debug the final message
 
             $entityManager->persist($reclamation);
             $entityManager->flush();
@@ -153,13 +149,11 @@ final class ReclamationController extends AbstractController
     {
         $reclamationRepository = $entityManager->getRepository(Reclamation::class);
 
-        // Fetch all reclamations
         $reclamations = $reclamationRepository->findAll();
 
-        // Initialize an empty array to store 'etat' and their corresponding counts
         $etatCounts = [];
 
-        // Count reclamations for each 'etat'
+
         foreach ($reclamations as $reclamation) {
             $etat = $reclamation->getEtat(); // Accessing the 'etat' of the reclamation
             if (!isset($etatCounts[$etat])) {
@@ -168,7 +162,7 @@ final class ReclamationController extends AbstractController
             $etatCounts[$etat]++;
         }
 
-        // Extract 'etat' names and counts from the associative array
+
         $labels = array_keys($etatCounts);
         $data = array_values($etatCounts);
 
@@ -176,7 +170,6 @@ final class ReclamationController extends AbstractController
         dump($labels);
         dump($data);
 
-        // Create the chart using ChartBuilder
         $chart = $chartBuilder
             ->createChart(Chart::TYPE_BAR) // Bar chart for 'etat' and counts
             ->setData([

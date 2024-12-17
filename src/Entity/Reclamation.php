@@ -5,10 +5,10 @@ namespace App\Entity;
 use App\Repository\ReclamationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ReclamationRepository::class)]
-class
-Reclamation
+class Reclamation
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -25,13 +25,23 @@ Reclamation
     private ?Reponse $reponse = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le message ne peut pas être vide.')]
+    #[Assert\Length(
+        min: 10,
+        max: 30,
+        minMessage: 'Le message doit contenir au moins {{ limit }} caractères.',
+        maxMessage: 'Le message ne peut pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $Message = null;
 
     #[ORM\ManyToOne]
+    #[Assert\NotNull(message: 'Veuillez sélectionner un projet.')]
     private ?Projet $Projet = null;
 
     #[ORM\ManyToOne]
     private ?User $IdClient = null;
+
+    // Getters and setters...
 
     public function getId(): ?int
     {

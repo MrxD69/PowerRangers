@@ -15,7 +15,7 @@
             </div>
             <div class="col-md-9">
                 <div class="contact-form">
-                    <!-- Search Input -->
+
                     <br>
                     <h1>Reclamation</h1>
                     <input type="text" id="searchInput" class="form-control mb-3" placeholder="Search for reclamation...">
@@ -42,25 +42,25 @@
                                 <td data-id="{{ reclamation.id }}">{{ reclamation.Message }}</td>
                                 <td>{{ reclamation.Projet.domaine }}</td>
                                 <td>
-                                    <!-- Process Button -->
+
                                     <form action="{{ path('app_reponse_new', {'lid': reclamation.id}) }}" method="post" style="display: inline-block; margin-right: 10px;">
                                         <button {{ reclamation.Etat == 'traité' ? 'disabled' : '' }} type="submit" class="btn btn-sm btn-primary" style="width: 100px; background-color: green;">Traiter</button>
                                     </form>
 
-                                    <!-- Delete Button -->
+
                                     <form action="{{ path('app_reclamation_deletee', {'id': reclamation.id}) }}" method="post" onsubmit="return confirm('Are you sure you want to delete this item?')" style="display: inline;">
                                         <input type="hidden" name="_method" value="DELETE">
                                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reclamation.id) }}">
                                         <button {{ reclamation.Etat == 'non traité' ? '' : 'disabled' }} type="submit" class="btn btn-sm btn-primary" style="width: 100px; background-color: maroon;">Supprimer</button>
                                     </form>
 
-                                    <!-- Translate Button -->
+
                                     <form onsubmit="translateComment('{{ reclamation.id }}'); return false;">
                                         <input type="hidden" id="comment_text_{{ reclamation.id }}" value="{{ reclamation.Message }}">
                                         <button type="submit" class="btn btn-sm btn-primary" style="width: 100px; background-color: orange;">Translate</button>
                                     </form>
 
-                                    <!-- Translated Comment Display -->
+
                                     <p id="translated_comment_{{ reclamation.id }}" class="mt-2 text-muted"></p>
                                 </td>
                             </tr>
@@ -72,7 +72,7 @@
                         </tbody>
                     </table>
 
-                    <!-- Pagination Controls -->
+
                     <div type="submit" class="btn btn-sm btn-primary"style="width: 100px; background-color: black;">
                         {{ knp_pagination_render(pagination) }}
                     </div>
@@ -117,7 +117,7 @@
                     return response.json();
                 })
                 .then(data => {
-                    // Update the <td> element with the translated comment
+
                     document.querySelector(`td[data-id="${commentId}"]`).textContent = data.translated_comment;
                 })
                 .catch(error => {
@@ -125,8 +125,8 @@
                 });
         }
     </script>
-    <div style="display: inline-block;">
+    <a href="{{ path('app_reclamation_chart') }}" type="submit" class="btn btn-sm btn-primary" style="width: 100px; background-color: orange;">Statestique</a>
 
-        <button onclick="window.location.href='{{ path('app_reclamation_chart') }}'" class="btn btn-primary mr-2" style="width: 100px;background-color: orange;">Statistique</button>
-    </div>
+
+
 {% endblock %}
