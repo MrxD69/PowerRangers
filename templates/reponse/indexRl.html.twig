@@ -40,7 +40,7 @@
                                 <td>{{ reclamation.Date ? reclamation.Date|date('Y-m-d') : '' }}</td>
                                 <td>{{ reclamation.Etat }}</td>
                                 <td data-id="{{ reclamation.id }}">{{ reclamation.Message }}</td>
-                                <td>{{ reclamation.Projet.domaine }}</td>
+                                <td>{{ reclamation.projectDb.domaine }}</td>
                                 <td>
 
                                     <form action="{{ path('app_reponse_new', {'lid': reclamation.id}) }}" method="post" style="display: inline-block; margin-right: 10px;">

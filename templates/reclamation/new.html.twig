@@ -11,13 +11,12 @@
                 {{ form_start(form) }}
 
                 <div class="form-group">
-                    {{ form_label(form.Message) }}
-                    {{ form_widget(form.Message, {'attr': {'class': 'form-control'}}) }}
-
-                    <!-- Display validation errors below the input -->
-                    {% for error in form.Message.vars.errors %}
+                    {{ form_label(form.message) }}
+                    {{ form_widget(form.message, {'attr': {'class': 'form-control'}}) }}
+                    {% for error in form.message.vars.errors %}
                         <div class="text-danger">{{ error.message }}</div>
                     {% endfor %}
+
 
                     <!-- Show the min/max length info -->
                     <small class="form-text text-muted">
@@ -28,7 +27,7 @@
                     </p>
                 </div>
 
-                {{ form_row(form.Projet) }}
+                {{ form_row(form.projectDb) }}
 
                 <button type="submit" class="btn btn-primary">Créer</button>
                 {{ form_end(form) }}

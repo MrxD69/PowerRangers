@@ -44,7 +44,8 @@
                                     <td>{{ reclamation.date ? reclamation.date|date('Y-m-d') : '' }}</td>
                                     <td>{{ reclamation.etat }}</td>
                                     <td>{{ reclamation.message }}</td>
-                                    <td>{{ reclamation.projet.domaine }}</td>
+                                    <td>{{ reclamation.projectDb.domaine }}</td>
+
                                     <td>
                                         <a href="{{ path('app_reclamation_show', {'id': reclamation.id}) }}" class="btn btn-primary btn-sm">Consulter</a>
                                         <a href="{{ path('app_reclamation_edit', {'id': reclamation.id}) }}" class="btn btn-secondary btn-sm"

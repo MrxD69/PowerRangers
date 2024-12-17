@@ -23,8 +23,7 @@ class ProjectDb
     )]
     private ?string $domaine = null;
 
-    #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank(message: "La description ne peut pas être vide.")]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Assert\Length(
         min: 10,
         max: 300,
@@ -33,10 +32,18 @@ class ProjectDb
     )]
     private ?string $description = null;
 
-    // Getters et Setters
+    // Getters and Setters
+
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(int $id): static
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     public function getDomaine(): ?string
@@ -56,7 +63,7 @@ class ProjectDb
         return $this->description;
     }
 
-    public function setDescription(string $description): static
+    public function setDescription(?string $description): static
     {
         $this->description = $description;
 

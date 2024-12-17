@@ -3,7 +3,6 @@
 namespace App\Form;
 
 use App\Entity\ProjectDb;
-use App\Entity\Projet;
 use App\Entity\Reclamation;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -16,17 +15,18 @@ class Reclamation2Type extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('Message', TextareaType::class, [
+            ->add('message', TextareaType::class, [ // Changed 'Message' to 'message' to match entity property
                 'label' => 'Votre message',
                 'attr' => [
                     'placeholder' => 'Entrez votre message ici...',
                     'rows' => 5,
                 ],
             ])
-            ->add('Projet', EntityType::class, [
+            ->add('projectDb', EntityType::class, [ // Changed 'Projet' to 'projectDb'
                 'class' => ProjectDb::class,
                 'choice_label' => 'domaine',
                 'placeholder' => 'Sélectionnez un projet',
+                'label' => 'Projet', // Optional: Keep user-visible label as "Projet"
             ]);
     }
 

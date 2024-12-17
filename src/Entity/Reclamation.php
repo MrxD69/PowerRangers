@@ -16,10 +16,10 @@ class Reclamation
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $Date = null;
+    private ?\DateTimeInterface $date = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $Etat = null;
+    private ?string $etat = null;
 
     #[ORM\OneToOne(mappedBy: 'reclamation', cascade: ['persist', 'remove'])]
     private ?Reponse $reponse = null;
@@ -28,20 +28,20 @@ class Reclamation
     #[Assert\NotBlank(message: 'Le message ne peut pas être vide.')]
     #[Assert\Length(
         min: 10,
-        max: 30,
+        max: 300,
         minMessage: 'Le message doit contenir au moins {{ limit }} caractères.',
         maxMessage: 'Le message ne peut pas dépasser {{ limit }} caractères.'
     )]
-    private ?string $Message = null;
+    private ?string $message = null;
 
     #[ORM\ManyToOne]
     #[Assert\NotNull(message: 'Veuillez sélectionner un projet.')]
-    private ?Projet $Projet = null;
+    private ?ProjectDb $projectDb = null;
 
     #[ORM\ManyToOne]
-    private ?User $IdClient = null;
+    private ?User $idClient = null;
 
-    // Getters and setters...
+    // Getters and Setters
 
     public function getId(): ?int
     {
@@ -50,24 +50,24 @@ class Reclamation
 
     public function getDate(): ?\DateTimeInterface
     {
-        return $this->Date;
+        return $this->date;
     }
 
-    public function setDate(\DateTimeInterface $Date): static
+    public function setDate(\DateTimeInterface $date): static
     {
-        $this->Date = $Date;
+        $this->date = $date;
 
         return $this;
     }
 
     public function getEtat(): ?string
     {
-        return $this->Etat;
+        return $this->etat;
     }
 
-    public function setEtat(string $Etat): static
+    public function setEtat(string $etat): static
     {
-        $this->Etat = $Etat;
+        $this->etat = $etat;
 
         return $this;
     }
@@ -90,36 +90,36 @@ class Reclamation
 
     public function getMessage(): ?string
     {
-        return $this->Message;
+        return $this->message;
     }
 
-    public function setMessage(string $Message): static
+    public function setMessage(string $message): static
     {
-        $this->Message = $Message;
+        $this->message = $message;
 
         return $this;
     }
 
-    public function getProjet(): ?Projet
+    public function getProjectDb(): ?ProjectDb
     {
-        return $this->Projet;
+        return $this->projectDb;
     }
 
-    public function setProjet(?Projet $Projet): static
+    public function setProjectDb(?ProjectDb $projectDb): static
     {
-        $this->Projet = $Projet;
+        $this->projectDb = $projectDb;
 
         return $this;
     }
 
     public function getIdClient(): ?User
     {
-        return $this->IdClient;
+        return $this->idClient;
     }
 
-    public function setIdClient(?User $IdClient): static
+    public function setIdClient(?User $idClient): static
     {
-        $this->IdClient = $IdClient;
+        $this->idClient = $idClient;
 
         return $this;
     }

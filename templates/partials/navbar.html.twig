@@ -6,9 +6,9 @@
     <div id="navbarCollapse" class="collapse navbar-collapse justify-content-between">
         <div class="navbar-nav">
             <a href="{{ path('app_dashboard') }}" class="nav-item nav-link">Dashboard</a>
-            <a href="{{ path('home_index') }}" class="nav-item nav-link">Home</a>
+            <a href="{{ path('app_project_db_index') }}" class="nav-item nav-link">Home</a>
             <div class="nav-item dropdown">
-                <a href="#" data-bs-toggle="dropdown" class="nav-item nav-link dropdown-toggle">Services</a>
+                <a href="#" data-bs-toggle="dropdown" class="nav-item nav-link dropdown-toggle">Projets</a>
                 <div class="dropdown-menu">
                     <a href="#" class="dropdown-item">Web Design</a>
                     <a href="#" class="dropdown-item">Web Development</a>
@@ -17,7 +17,7 @@
                 </div>
             </div>
             <a href="{{ path('app_evenement_index') }}" class="nav-item nav-link">Evenement</a>
-            <a href="" class="nav-item nav-link">Blog</a>
+            <a href="{{ path('app_reclamation_index') }}" class="nav-item nav-link">Reclamation</a>
             <a href="" class="nav-item nav-link">Contact</a>
             {# <a href="{{ path('about_page') }}" class="nav-item nav-link">About</a> #}
             <a href="{{ path('app_project_db_index') }}" class="nav-item nav-link">Projects</a>
