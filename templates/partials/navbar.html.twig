@@ -7,12 +7,35 @@
         <div class="navbar-nav">
             <a href="{{ path('app_dashboard') }}" class="nav-item nav-link">Dashboard</a>
             <a href="{{ path('home_index') }}" class="nav-item nav-link">Home</a>
+            {#            <a href="{{ path('about_page') }}" class="nav-item nav-link">About</a>#}
+            <div class="nav-item dropdown">
+                <a href="#" data-toggle="dropdown" class="nav-item nav-link dropdown-toggle">Services</a>
+                <div class="dropdown-menu">
+                    <a href="#" class="dropdown-item">Web Design</a>
+                    <a href="#" class="dropdown-item">Web Development</a>
+                    <a href="#" class="dropdown-item">Graphic Design</a>
+                    <a href="#" class="dropdown-item">Digital Marketing</a>
+                </div>
+            </div>
+            <a href="{{ path('app_evenement_index') }}" class="nav-item nav-link">Evenement</a>
+            <a href="" class="nav-item nav-link">Blog</a>
+            <a href="" class="nav-item nav-link">Contact</a>
             {# <a href="{{ path('about_page') }}" class="nav-item nav-link">About</a> #}
             <a href="{{ path('app_project_db_index') }}" class="nav-item nav-link">Projects</a>
             <a href="{{ path('app_commande_db_index') }}" class="nav-item nav-link">Offers</a>
         </div>
         <div class="navbar-nav ms-auto"> <!-- Pushes this section to the far right -->
             <a href="" class="btn btn-outline-primary me-2">Login</a>
+        <form class="navbar-form form-inline search-form">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search...">
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-default"><i class="fa fa-search"></i></button>
+                </span>
+            </div>
+        </form>
+        <div class="navbar-nav ml-auto d-flex justify-content-end">
+            <a href="" class="btn btn-outline-primary mr-2">Login</a>
             <a href="" class="btn btn-primary">Sign Up</a>
         </div>
     </div>

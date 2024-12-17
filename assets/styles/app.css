@@ -1,4 +1,3 @@
-/* Body Styles */
 body {
     background: linear-gradient(to bottom, #87cefa, #b0e0e6); /* Smooth gradient skyblue background */
     font-family: 'Arial', sans-serif;
@@ -47,4 +46,5 @@ body {
     background-color: #1e7e34; /* Darker green when pressed */
     transform: scale(1); /* Reset scale */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    background-color: skyblue;
 }

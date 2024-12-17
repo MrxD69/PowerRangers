@@ -1,0 +1,83 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détail du Participant{% endblock %}
+
+{% block body %}
+    <style>
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 12px;
+            background-color: #a52834;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 16px;
+            text-align: center;
+            text-decoration: none;
+            line-height: 1;
+        }
+
+        .btn:hover {
+            background-color: #dc3545;
+        }
+
+        .btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+
+    <div class="container">
+        <div>
+            <div style="text-align: center;">
+                <h1 style="color: #20B2AA; font-weight: bold;">Détail du Participant</h1>
+            </div>
+
+            <table class="table">
+                <tbody>
+
+                <tr>
+                    <th style="color: #20B2AA; text-align: left;">Nom :</th>
+                    <td style="font-weight: bold;">{{ participant.nom }}</td>
+                </tr>
+                <tr>
+                    <th style="color: #20B2AA; text-align: left;">Prénom :</th>
+                    <td style="font-weight: bold;">{{ participant.prenom }}</td>
+                </tr>
+                <tr>
+                    <th style="color: #20B2AA; text-align: left;">Âge :</th>
+                    <td style="font-weight: bold;">{{ participant.age }}</td>
+                </tr>
+                <tr>
+                    <th style="color: #20B2AA; text-align: left;">Email :</th>
+                    <td style="font-weight: bold;">{{ participant.email }}</td>
+                </tr>
+                <tr>
+                    <th style="color: #20B2AA; text-align: left;">Numéro de téléphone :</th>
+                    <td style="font-weight: bold;">{{ participant.numTelephone }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div style="text-align: center;">
+
+        <div class="btn btn-danger">
+            {{ include('participant/_delete_form.html.twig') }}
+        </div>
+        <a href="{{ path('app_participant_index') }}" style="font-weight: bold;">Retour à la liste</a>
+        <a>|</a>
+        <a href="{{ path('app_participant_edit', {'id': participant.id}) }}" style="font-weight: bold;">Modifier</a>
+    </div>
+{% endblock %}
