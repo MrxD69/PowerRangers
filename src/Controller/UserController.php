@@ -4,11 +4,11 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Enum\UserRole;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Doctrine\ORM\EntityManagerInterface;
 
 class UserController extends AbstractController
 {
@@ -19,15 +19,37 @@ class UserController extends AbstractController
         $this->entityManager = $entityManager;
     }
 
-    #[Route('/freelancer/{id}/profile', name: 'get_freelancer_profile', methods: ['GET'])]
-    public function getFreelancerProfile(int $id): Response
+    /**
+     * Public Freelancer Profile - Accessible to Everyone
+     */
+    #[Route('/freelancer/{id}/public-profile', name: 'get_freelancer_public_profile', methods: ['GET'])]
+    public function getFreelancerPublicProfile(int $id): Response
     {
         $user = $this->entityManager->getRepository(User::class)->find($id);
 
         if (!$user || $user->getRole() !== UserRole::ROLE_FREELANCER) {
-            return $this->render('errors/404.html.twig', [
-                'message' => 'Freelancer not found.'
-            ], Response::HTTP_NOT_FOUND);
+            throw $this->createNotFoundException('Freelancer profile not found.');
+        }
+
+        // Ensure a default profile picture if none exists
+        $profilePicture = $user->getProfilePicture() ?: 'public/uploads/profile_pictures/khalil.jpg';
+
+        return $this->render('freelancer/public_profile.html.twig', [
+            'user' => $user,
+            'profile_picture' => $profilePicture,
+        ]);
+    }
+
+    /**
+     * Private Freelancer Profile - For Authenticated Freelancer Only
+     */
+    #[Route('/freelancer/profile', name: 'get_freelancer_private_profile', methods: ['GET'])]
+    public function getFreelancerPrivateProfile(): Response
+    {
+        $user = $this->getUser();
+
+        if (!$user || $user->getRole() !== UserRole::ROLE_FREELANCER) {
+            throw $this->createAccessDeniedException('Access denied.');
         }
 
         return $this->render('freelancer/freelancer_profile.html.twig', [
@@ -35,17 +57,31 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/freelancer/profile/edit', name: 'freelancer/edit_freelancer_profile', methods: ['GET', 'POST'])]
+    /**
+     * Edit Freelancer Profile - Restricted to Authenticated Freelancer
+     */
+    #[Route('/freelancer/profile/edit', name: 'freelancer_edit_profile', methods: ['GET', 'POST'])]
     public function editFreelancerProfile(Request $request): Response
     {
         $user = $this->getUser();
 
         if (!$user || $user->getRole() !== UserRole::ROLE_FREELANCER) {
+            $this->addFlash('error', 'Access denied.');
             return $this->redirectToRoute('home_index');
         }
 
         if ($request->isMethod('POST')) {
-            // Handle file upload for profile picture
+            $biography = $request->request->get('biography');
+            $location = $request->request->get('location');
+            $skills = $request->request->all('skills');
+            $phone = $request->request->get('phone');
+            $twitter = $request->request->get('twitter');
+            $facebook = $request->request->get('facebook');
+            $instagram = $request->request->get('instagram');
+            $linkedin = $request->request->get('linkedin');
+            $github = $request->request->get('github');
+
+            // Handle profile picture upload
             $uploadedFile = $request->files->get('profilePicture');
             if ($uploadedFile) {
                 $destination = $this->getParameter('profile_pictures_directory');
@@ -56,40 +92,13 @@ class UserController extends AbstractController
                     $user->setProfilePicture('/uploads/profile_pictures/' . $newFilename);
                 } catch (\Exception $e) {
                     $this->addFlash('error', 'Failed to upload profile picture.');
-                    return $this->redirectToRoute('freelancer/edit_freelancer_profile');
                 }
             }
 
-            // Retrieve and validate other form data
-            $biography = $request->request->get('biography');
-            $location = $request->request->get('location');
-            $skills = $request->request->all('skills');
-            $phone = $request->request->get('phone');
-
-            // Social links
-            $twitter = $request->request->get('twitter');
-            $facebook = $request->request->get('facebook');
-            $instagram = $request->request->get('instagram');
-            $linkedin = $request->request->get('linkedin');
-            $github = $request->request->get('github');
-
-            // Process and validate `skills` array
-            $processedSkills = [];
-            if (is_array($skills)) {
-                foreach ($skills as $skill) {
-                    if (!empty($skill['name']) && isset($skill['progress'])) {
-                        $processedSkills[] = [
-                            'name' => $skill['name'],
-                            'progress' => (int)$skill['progress'],
-                        ];
-                    }
-                }
-            }
-
-            // Update the user entity
+            // Update user entity
             $user->setBiography($biography);
             $user->setLocation($location);
-            $user->setSkills($processedSkills);
+            $user->setSkills($skills);
             $user->setPhone($phone);
             $user->setTwitter($twitter);
             $user->setFacebook($facebook);
@@ -97,13 +106,11 @@ class UserController extends AbstractController
             $user->setLinkedin($linkedin);
             $user->setGithub($github);
 
-            // Save changes
             $this->entityManager->persist($user);
             $this->entityManager->flush();
 
             $this->addFlash('success', 'Profile updated successfully.');
-
-            return $this->redirectToRoute('get_freelancer_profile', ['id' => $user->getId()]);
+            return $this->redirectToRoute('get_freelancer_private_profile');
         }
 
         return $this->render('freelancer/edit_freelancer_profile.html.twig', [
@@ -111,15 +118,16 @@ class UserController extends AbstractController
         ]);
     }
 
+    /**
+     * Public Client Profile - Accessible to Everyone
+     */
     #[Route('/client/{id}/profile', name: 'get_client_profile', methods: ['GET'])]
     public function getClientProfile(int $id): Response
     {
         $user = $this->entityManager->getRepository(User::class)->find($id);
 
         if (!$user || $user->getRole() !== UserRole::ROLE_CLIENT) {
-            return $this->render('errors/404.html.twig', [
-                'message' => 'Client not found.'
-            ], Response::HTTP_NOT_FOUND);
+            throw $this->createNotFoundException('Client profile not found.');
         }
 
         return $this->render('client/client_profile.html.twig', [
@@ -127,17 +135,24 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/client/profile/edit', name: 'client/edit_client_profile', methods: ['GET', 'POST'])]
+    /**
+     * Edit Client Profile - Restricted to Authenticated Client
+     */
+    #[Route('/client/profile/edit', name: 'client_edit_profile', methods: ['GET', 'POST'])]
     public function editClientProfile(Request $request): Response
     {
         $user = $this->getUser();
 
         if (!$user || $user->getRole() !== UserRole::ROLE_CLIENT) {
+            $this->addFlash('error', 'Access denied.');
             return $this->redirectToRoute('home_index');
         }
 
         if ($request->isMethod('POST')) {
-            // Handle file upload for profile picture
+            $location = $request->request->get('location');
+            $phone = $request->request->get('phone');
+
+            // Handle profile picture upload
             $uploadedFile = $request->files->get('profilePicture');
             if ($uploadedFile) {
                 $destination = $this->getParameter('profile_pictures_directory');
@@ -148,24 +163,16 @@ class UserController extends AbstractController
                     $user->setProfilePicture('/uploads/profile_pictures/' . $newFilename);
                 } catch (\Exception $e) {
                     $this->addFlash('error', 'Failed to upload profile picture.');
-                    return $this->redirectToRoute('client/edit_client_profile');
                 }
             }
 
-            // Retrieve and validate form data
-            $phone = $request->request->get('phone');
-            $location = $request->request->get('location');
-
-            // Update the user entity
-            $user->setPhone($phone);
             $user->setLocation($location);
+            $user->setPhone($phone);
 
-            // Save changes
             $this->entityManager->persist($user);
             $this->entityManager->flush();
 
             $this->addFlash('success', 'Profile updated successfully.');
-
             return $this->redirectToRoute('get_client_profile', ['id' => $user->getId()]);
         }
 
@@ -173,4 +180,19 @@ class UserController extends AbstractController
             'user' => $user,
         ]);
     }
+
+    #[Route('/admin/{id}/profile', name: 'get_admin_profile', methods: ['GET'])]
+    public function getAdminProfile(int $id): Response
+    {
+        $user = $this->entityManager->getRepository(User::class)->find($id);
+
+        if (!$user || $user->getRole() !== UserRole::ROLE_ADMIN) {
+            throw $this->createNotFoundException('Admin profile not found.');
+        }
+
+        return $this->render('admin/admin_profile.html.twig', [
+            'user' => $user,
+        ]);
+    }
+
 }

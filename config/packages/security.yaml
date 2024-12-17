@@ -21,18 +21,33 @@ security:
                 enable_csrf: true
                 username_parameter: email
                 password_parameter: password
-                default_target_path: app_project_db_index # Redirect after successful login
-                always_use_default_target_path: false # Allow redirects to last visited pages
+                default_target_path: app_project_db_index
+                always_use_default_target_path: false
             logout:
                 path: app_logout
-                target: app_login # Redirect after logout
+                target: app_login
             lazy: true
             stateless: false
 
     access_control:
+        # Public access to freelancer public profiles
+        - { path: ^/freelancer/\d+/public-profile$, roles: PUBLIC_ACCESS }
+
+        # Secure access to freelancer private profile and edit routes
+        - { path: ^/freelancer/profile$, roles: ROLE_FREELANCER }
+        - { path: ^/freelancer/profile/edit$, roles: ROLE_FREELANCER }
+
+        # Secure client profile and edit routes
+        - { path: ^/client/profile$, roles: ROLE_CLIENT }
+        - { path: ^/client/profile/edit$, roles: ROLE_CLIENT }
+
+        # Secure admin section
+        - { path: ^/dashboard, roles: ROLE_ADMIN }
+
+        # Public pages
         - { path: ^/login$, roles: PUBLIC_ACCESS }
         - { path: ^/register$, roles: PUBLIC_ACCESS }
-        - { path: ^/admin, roles: ROLE_ADMIN }
-        - { path: ^/freelancer, roles: ROLE_FREELANCER }
+        - { path: ^/project/db, roles: PUBLIC_ACCESS }
+
+        # Allow homepage for unauthenticated users
         - { path: ^/, roles: PUBLIC_ACCESS }
-        - { path: ^/project/db, roles: PUBLIC_ACCESS }# Allow homepage for unauthenticated users

@@ -40,6 +40,7 @@
                               {{ path('get_freelancer_profile', { id: app.user.id }) }}
                           {% elseif app.user.role.value == 'ROLE_CLIENT' %}
                               {{ path('get_client_profile', { id: app.user.id }) }}
+
                           {% else %}
                               {{ path('home_index') }}
                           {% endif %}"

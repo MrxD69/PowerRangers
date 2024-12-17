@@ -1,0 +1,100 @@
+{% block stylesheets %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/freelancer_profile.css') }}">
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="main-body">
+            <div class="row gutters-sm">
+                <!-- Left Column: Profile Picture & Social Media -->
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <img src="{{ user.profilePicture ?: asset('img/khalil.jpg') }}" alt="Profile Picture" class="rounded-circle" width="150">
+                            <div class="mt-3">
+                                <h4>{{ user.nom }} {{ user.prenom }}</h4>
+                                <p class="text-secondary mb-1">{{ user.role.value|capitalize }}</p>
+                                <p class="text-muted font-size-sm">{{ user.location ?: 'Location not provided' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Social Media Links -->
+                    <div class="card mt-3">
+                        <ul class="list-group list-group-flush">
+                            {% for platform, link in { 'Github': user.github, 'Twitter': user.twitter, 'Instagram': user.instagram, 'Facebook': user.facebook } %}
+                                {% if link %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                                        <h6 class="mb-0"><i class="fab fa-{{ platform|lower }} mr-2"></i>{{ platform }}</h6>
+                                        <a href="{{ link }}" class="text-secondary" target="_blank">{{ link }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if not user.github and not user.twitter and not user.instagram and not user.facebook %}
+                                <li class="list-group-item text-center text-muted">No social media links provided.</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Right Column: Profile Details -->
+                <div class="col-md-8">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <!-- Full Name -->
+                            <div class="row">
+                                <div class="col-sm-3"><h6 class="mb-0">Full Name</h6></div>
+                                <div class="col-sm-9 text-secondary">{{ user.nom }} {{ user.prenom }}</div>
+                            </div>
+                            <hr>
+                            <!-- Role -->
+                            <div class="row">
+                                <div class="col-sm-3"><h6 class="mb-0">Role</h6></div>
+                                <div class="col-sm-9 text-secondary">{{ user.role.value|capitalize }}</div>
+                            </div>
+                            <hr>
+                            <!-- Location -->
+                            <div class="row">
+                                <div class="col-sm-3"><h6 class="mb-0">Location</h6></div>
+                                <div class="col-sm-9 text-secondary">{{ user.location ?: 'Not provided' }}</div>
+                            </div>
+                            <hr>
+                            <!-- Biography -->
+                            <div class="row">
+                                <div class="col-sm-3"><h6 class="mb-0">Biography</h6></div>
+                                <div class="col-sm-9 text-secondary">
+                                    {{ user.biography ?: 'Biography not provided.' }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Skills and Progress -->
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h6 class="d-flex align-items-center mb-3">Skills</h6>
+                            {% if user.skills|length > 0 %}
+                                {% for skill in user.skills %}
+                                    <small>{{ skill.name|capitalize }}</small>
+                                    <div class="progress mb-3" style="height: 5px;">
+                                        <div class="progress-bar bg-primary" role="progressbar"
+                                             style="width: {{ skill.progress }}%;"
+                                             aria-valuenow="{{ skill.progress }}"
+                                             aria-valuemin="0"
+                                             aria-valuemax="100"></div>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p>No skills have been added yet.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
