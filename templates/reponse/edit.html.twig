@@ -8,7 +8,9 @@
     {# Include the form for editing the Reponse #}
     {{ include('reponse/_form.html.twig', {'button_label': 'Update'}) }}
 
-    <a href="{{ path('app_reponse_index') }}">Back to list</a>
+    <a href="{{ path('app_reponse_index') }}" class="btn btn-secondary btn-sm">
+        <i class="fas fa-arrow-left"></i> Back to list
+    </a>
 
     {# Include the delete form, which should contain a CSRF token and deletion logic #}
     {{ include('reponse/_delete_form.html.twig') }}
