@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create New Reponse{% endblock %}
+
+{% block body %}
+    <h1>Create New Reponse</h1>
+
+    {{ form_start(form) }}
+
+    <div class="form-group">
+        {{ form_label(form.Message) }}
+        {{ form_widget(form.Message, {'attr': {'class': 'form-control'}}) }}
+
+        <!-- Display validation errors below the input -->
+        {% for error in form.Message.vars.errors %}
+            <div class="text-danger">{{ error.message }}</div>
+        {% endfor %}
+
+        <!-- Optionally show the min/max info explicitly -->
+        <small class="form-text text-muted">
+            Le message doit être compris entre 10 et 30 caractères.
+        </small>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('app_reclamationc') }}" class="btn btn-secondary btn-sm">
+        <i class="fas fa-arrow-left"></i> Back to list
+    </a>
+{% endblock %}

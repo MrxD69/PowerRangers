@@ -1,3 +1,50 @@
 body {
+    background: linear-gradient(to bottom, #87cefa, #b0e0e6); /* Smooth gradient skyblue background */
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* Input Field Styles */
+.custom-input {
+    border: 2px solid #28a745; /* A brighter green for a fresher look */
+    border-radius: 8px; /* Slightly rounder corners */
+    padding: 12px 15px;
+    width: 100%;
+    font-size: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.custom-input:focus {
+    border-color: #218838; /* Slightly darker green for focus state */
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.25); /* Subtle green shadow */
+    outline: none;
+}
+
+/* Button Styles */
+.custom-button {
+    background-color: #28a745; /* Brighter green for better contrast */
+    color: #fff;
+    border: none;
+    border-radius: 8px; /* Matching input corners */
+    padding: 12px 25px; /* Comfortable padding */
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.custom-button:hover {
+    background-color: #218838; /* Slightly darker shade on hover */
+    transform: scale(1.08); /* Slight zoom effect */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Soft shadow for hover */
+}
+
+.custom-button:active {
+    background-color: #1e7e34; /* Darker green when pressed */
+    transform: scale(1); /* Reset scale */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
     background-color: skyblue;
 }

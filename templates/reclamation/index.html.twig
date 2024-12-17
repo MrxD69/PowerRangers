@@ -1,0 +1,123 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Reclamation index{% endblock %}
+
+{% block body %}
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <div class="container contact mt-4">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="contact-info text-center">
+                    <img src="https://image.ibb.co/kUASdV/contact-image.png" alt="Reclamation Icon" />
+                    <h2>Reclamations</h2>
+                    <h4>Manage all your complaints effectively!</h4>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="contact-form">
+                    <h1>Reclamation</h1>
+                    <input type="text" id="searchInput" class="form-control mb-3" placeholder="Search for reclamation...">
+                    <br>
+                    <!-- <p>Total Reclamations: {{ reclamations|length }}</p> -->
+
+                    <!-- Form for deleting multiple reclamations -->
+                    <form id="deleteForm" action="{{ path('app_reclamation_delete_multiple') }}" method="post">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th><input type="checkbox" id="select-all"></th>
+                                <th>Date</th>
+                                <th>Etat</th>
+                                <th>Message</th>
+                                <th>Projet</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for reclamation in reclamations %}
+                                <tr>
+                                    <td><input type="checkbox" name="selectedIds[]" value="{{ reclamation.id }}"></td>
+                                    <td>{{ reclamation.date ? reclamation.date|date('Y-m-d') : '' }}</td>
+                                    <td>{{ reclamation.etat }}</td>
+                                    <td>{{ reclamation.message }}</td>
+                                    <td>{{ reclamation.projet.domaine }}</td>
+                                    <td>
+                                        <a href="{{ path('app_reclamation_show', {'id': reclamation.id}) }}" class="btn btn-primary btn-sm">Consulter</a>
+                                        <a href="{{ path('app_reclamation_edit', {'id': reclamation.id}) }}" class="btn btn-secondary btn-sm"
+                                                {{ reclamation.etat == 'non traité' ? '' : 'disabled' }}>Modifier</a>
+
+                                        <form action="{{ path('app_reclamation_delete', {'id': reclamation.id}) }}" method="post" style="display: inline;">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reclamation.id) }}">
+                                            <button type="submit" class="btn btn-sm btn-primary" style="width: 100px; background-color: maroon;"
+                                                    {{ reclamation.etat == 'non traité' ? '' : 'disabled' }}
+                                                    onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette réclamation ?')">Supprimer
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center">No records found</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+
+                        <!-- "Delete Multiple" Button -->
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete_multiple') }}">
+                        <button type="submit"  class="btn btn-success mt-3">Supprimer tous</button>
+                    </form>
+
+                    <a href="{{ path('app_reclamation_new') }}" class="btn btn-success mt-3">Ajouter Reclamation</a>
+
+                    <!-- Tableau Statistique -->
+                    <div class="mt-5">
+                        <h2>Reclamation Statistics</h2>
+                        <table class="table table-bordered">
+                            <thead class="thead-light">
+                            <tr>
+                                <th>Total Reclamations</th>
+                                <th>Reclamations Traitées</th>
+                                <th>Reclamations Non Traitées</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>{{ reclamations|length }}</td>
+                                <td>{{ reclamations|filter(r => r.etat == 'traité')|length }}</td>
+                                <td>{{ reclamations|filter(r => r.etat == 'non traité')|length }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Select/Deselect All checkboxes
+            $('#select-all').click(function() {
+                $('input[name="selectedIds[]"]').prop('checked', this.checked);
+            });
+
+            $('#searchInput').on('input', function() {
+                var searchText = $(this).val().toLowerCase();
+                $('table tbody tr').each(function() {
+                    var rowData = $(this).text().toLowerCase();
+                    if (rowData.indexOf(searchText) === -1) {
+                        $(this).hide();
+                    } else {
+                        $(this).show();
+                    }
+                });
+            });
+        });
+    </script>
+
+{% endblock %}

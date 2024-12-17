@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Recherche de projets{% endblock %}
+
+{% block body %}
+    <h1>Projects search</h1>
+
+    {{ form_start(form) }}
+    {{ form_row(form.id) }}
+    {{ form_row(form.domaine) }}
+    {{ form_row(form.description) }}
+    <button class="btn btn-primary">Rechercher</button>
+    {{ form_end(form) }}
+
+    <h2>Résultats de la recherche</h2>
+    <table class="table">
+        <thead>
+        <tr>
+
+            <th>domaine</th>
+            <th>description</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for project_db in project_dbs %}
+            <tr>
+
+                <td>{{ event.domaine }}</td>
+                <td>{{ event.description }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">Aucun Projet trouvé.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+

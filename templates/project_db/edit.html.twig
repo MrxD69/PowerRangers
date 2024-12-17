@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Project{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <h1 class="my-4 text-success">Edit project</h1>
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        {{ include('project_db/_form.html.twig') }}
+                    </div>
+                </div>
+
+                <div class="mt-4 d-flex justify-content-between">
+                    <a href="{{ path('app_project_db_index') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to List
+                    </a>y
+
+                    {{ include('project_db/_delete_form.html.twig') }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.querySelector("form");
+            form.addEventListener("submit", function (event) {
+                let valid = true;
+                const domaine = document.getElementById("project_db_domaine");
+                const description = document.getElementById("project_db_description");
+
+                // Domaine validation
+                if (!domaine.value.trim()) {
+                    valid = false;
+                    domaine.classList.add("is-invalid");
+                    alert("The domaine field cannot be empty.");
+                } else {
+                    domaine.classList.remove("is-invalid");
+                }
+
+                // Description validation
+                if (!description.value.trim()) {
+                    valid = false;
+                    description.classList.add("is-invalid");
+                    alert("The description cannot be empty.");
+                } else {
+                    description.classList.remove("is-invalid");
+                }
+
+                // Prevent form submission if invalid
+                if (!valid) {
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
+{% endblock %}

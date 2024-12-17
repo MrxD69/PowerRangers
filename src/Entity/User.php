@@ -2,59 +2,160 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
+use App\Enum\UserRole;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: '`user`')]
-#[ORM\HasLifecycleCallbacks]
-class User
+#[ORM\Entity(repositoryClass: "App\Repository\UserRepository")]
+#[ORM\Table(name: "user")]
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(type: "integer")]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $nom = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $prenom = null;
-
-    #[ORM\Column(length: 255, unique: true)]
+    #[ORM\Column(type: "string", length: 255, unique: true)]
+    #[Assert\NotBlank]
+    #[Assert\Email]
     private ?string $email = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $tel = null;
-
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: "string")]
+    #[Assert\NotBlank]
     private ?string $password = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $role = null;
+    #[ORM\Column(type: "string", length: 255)]
+    #[Assert\NotBlank]
+    private ?string $nom = null;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    #[ORM\Column(type: "string", length: 255)]
+    #[Assert\NotBlank]
+    private ?string $prenom = null;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $updatedAt = null;
+    #[ORM\Column(type: "string", enumType: UserRole::class)]
+    #[Assert\NotBlank]
+    private UserRole $role;
 
-    public function __construct()
+    #[ORM\Column(type: "text", nullable: true)]
+    private ?string $biography = null;
+
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    private ?string $location = null;
+
+    #[ORM\Column(type: "json", nullable: true)]
+    private ?array $skills = [];
+
+    #[ORM\Column(type: "json", nullable: true)]
+    private ?array $workExperience = [];
+
+    #[ORM\Column(type: "string", length: 15, nullable: true)]
+    private ?string $phone = null;
+
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    private ?string $profilePicture = null;
+
+    #[ORM\Column(type: "json", nullable: true)]
+    private ?array $progressBars = [];
+
+    public function getProgressBars(): ?array
     {
-        $this->createdAt = new \DateTimeImmutable();
+        return $this->progressBars;
     }
 
-    #[ORM\PrePersist]
-    public function onPrePersist(): void
+    public function setProgressBars(?array $progressBars): self
     {
-        $this->createdAt = new \DateTimeImmutable();
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->progressBars = $progressBars;
+        return $this;
     }
 
-    #[ORM\PreUpdate]
-    public function onPreUpdate(): void
+    //social links
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    #[Assert\Url]
+
+    private ?string $twitter = null;
+
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    #[Assert\Url]
+
+    private ?string $facebook = null;
+
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    #[Assert\Url]
+
+    private ?string $instagram = null;
+
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    #[Assert\Url]
+
+    private ?string $linkedin = null;
+
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    #[Assert\Url]
+
+    private ?string $github = null;
+
+    public function getTwitter(): ?string
     {
-        $this->updatedAt = new \DateTimeImmutable();
+        return $this->twitter;
+    }
+
+    public function setTwitter(?string $twitter): self
+    {
+        $this->twitter = $twitter;
+        return $this;
+    }
+
+    public function getFacebook(): ?string
+    {
+        return $this->facebook;
+    }
+
+    public function setFacebook(?string $facebook): self
+    {
+        $this->facebook = $facebook;
+        return $this;
+    }
+
+    public function getInstagram(): ?string
+    {
+        return $this->instagram;
+    }
+
+    public function setInstagram(?string $instagram): self
+    {
+        $this->instagram = $instagram;
+        return $this;
+    }
+
+    public function getLinkedin(): ?string
+    {
+        return $this->linkedin;
+    }
+
+    public function setLinkedin(?string $linkedin): self
+    {
+        $this->linkedin = $linkedin;
+        return $this;
+    }
+
+    public function getGithub(): ?string
+    {
+        return $this->github;
+    }
+
+    public function setGithub(?string $github): self
+    {
+        $this->github = $github;
+        return $this;
+    }
+
+    //end social links
+
+    public function getFullName(): string
+    {
+        return $this->nom . ' ' . $this->prenom;
     }
 
     public function getId(): ?int
@@ -62,51 +163,14 @@ class User
         return $this->id;
     }
 
-    public function getNom(): ?string
-    {
-        return $this->nom;
-    }
-
-    public function setNom(string $nom): static
-    {
-        $this->nom = $nom;
-
-        return $this;
-    }
-
-    public function getPrenom(): ?string
-    {
-        return $this->prenom;
-    }
-
-    public function setPrenom(string $prenom): static
-    {
-        $this->prenom = $prenom;
-
-        return $this;
-    }
-
     public function getEmail(): ?string
     {
         return $this->email;
     }
 
-    public function setEmail(string $email): static
+    public function setEmail(string $email): self
     {
         $this->email = $email;
-
-        return $this;
-    }
-
-    public function getTel(): ?string
-    {
-        return $this->tel;
-    }
-
-    public function setTel(?string $tel): static
-    {
-        $this->tel = $tel;
-
         return $this;
     }
 
@@ -115,32 +179,124 @@ class User
         return $this->password;
     }
 
-    public function setPassword(string $password): static
+    public function setPassword(string $password): self
     {
         $this->password = $password;
-
         return $this;
     }
 
-    public function getRole(): ?string
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(string $nom): self
+    {
+        $this->nom = $nom;
+        return $this;
+    }
+
+    public function getPrenom(): ?string
+    {
+        return $this->prenom;
+    }
+
+    public function setPrenom(string $prenom): self
+    {
+        $this->prenom = $prenom;
+        return $this;
+    }
+
+    public function getRole(): UserRole
     {
         return $this->role;
     }
 
-    public function setRole(string $role): static
+    public function setRole(UserRole $role): self
     {
         $this->role = $role;
-
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getBiography(): ?string
     {
-        return $this->createdAt;
+        return $this->biography;
     }
 
-    public function getUpdatedAt(): ?\DateTimeImmutable
+    public function setBiography(?string $biography): self
     {
-        return $this->updatedAt;
+        $this->biography = $biography;
+        return $this;
+    }
+
+    public function getLocation(): ?string
+    {
+        return $this->location;
+    }
+
+    public function setLocation(?string $location): self
+    {
+        $this->location = $location;
+        return $this;
+    }
+
+    public function getSkills(): ?array
+    {
+        return $this->skills;
+    }
+
+    public function setSkills(?array $skills): self
+    {
+        $this->skills = $skills;
+        return $this;
+    }
+
+    public function getWorkExperience(): ?array
+    {
+        return $this->workExperience;
+    }
+
+    public function setWorkExperience(?array $workExperience): self
+    {
+        $this->workExperience = $workExperience;
+        return $this;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): self
+    {
+        $this->phone = $phone;
+        return $this;
+    }
+
+    public function getProfilePicture(): ?string
+    {
+        return $this->profilePicture;
+    }
+
+    public function setProfilePicture(?string $profilePicture): self
+    {
+        $this->profilePicture = $profilePicture;
+        return $this;
+    }
+
+    public function getRoles(): array
+    {
+        // Return an array of roles expected by Symfony
+        return [$this->role->value];
+    }
+
+    public function eraseCredentials(): void
+    {
+        // Clear sensitive data if necessary
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->email;
     }
 }

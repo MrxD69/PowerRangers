@@ -1,0 +1,5 @@
+<form method="post" action="{{ path('app_project_db_delete', {'id': project_db.id}) }}" onsubmit="return confirm('Are you sure you want to delete this project?');">
+    <button type="submit" class="btn btn-danger">
+        <i class="bi bi-trash"></i> Delete
+    </button>
+</form>

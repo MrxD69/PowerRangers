@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Offers search{% endblock %}
+
+{% block body %}
+    <h1>Offers search</h1>
+
+    {{ form_start(form) }}
+    {{ form_row(form.id) }}
+    {{ form_row(form.technologie) }}
+    {{ form_row(form.description) }}
+    <button class="btn btn-primary">Rechercher</button>
+    {{ form_end(form) }}
+
+    <h2>Résultats de la recherche</h2>
+    <table class="table">
+        <thead>
+        <tr>
+
+            <th>technologie</th>
+            <th>description</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for commande_db in commande_dbs %}
+            <tr>
+
+                <td>{{ event.technologie }}</td>
+                <td>{{ event.description }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">Aucun Offre trouvé.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+

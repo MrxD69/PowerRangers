@@ -1,0 +1,16 @@
+{{ form_start(form) }}
+<div class="form-group">
+    {{ form_label(form.Message) }}
+    {{ form_widget(form.Message, {'attr': {'class': 'form-control'}}) }}
+    {{ form_errors(form.Message) }}
+</div>
+
+<div class="form-group">
+    {{ form_label(form.Projet) }}
+    {{ form_widget(form.Projet, {'attr': {'class': 'form-control'}}) }}
+    {{ form_errors(form.Projet) }}
+</div>
+
+<button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+{{ form_end(form) }}
+

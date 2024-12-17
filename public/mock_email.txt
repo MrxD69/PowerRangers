@@ -1,0 +1,1 @@
+Password Reset Link: https://127.0.0.1:8000/reset-password/54390a8fa002c6336e4a1dd3c29ea44f5c4ab1ae01268bc4b039cf902bc5ce20

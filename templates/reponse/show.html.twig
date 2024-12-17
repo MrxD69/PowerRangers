@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Reponse{% endblock %}
+
+{% block body %}
+    <h1>Reponse</h1>
+
+    <table class="table">
+        <tbody>
+        <tr>
+            <th>Id</th>
+            <td>{{ reponse.id }}</td>
+        </tr>
+        <tr>
+            <th>Date</th>
+            <td>{{ reponse.Date ? reponse.Date|date('Y-m-d') : '' }}</td>
+        </tr>
+        <tr>
+            <th>Message</th>
+            <td>{{ reponse.Message }}</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_reponse_index') }}" class="btn btn-secondary btn-sm">
+        <i class="fas fa-arrow-left"></i> Back to list
+    </a>
+    <a href="{{ path('app_reponse_edit', {'id': reponse.id}) }}" class="btn btn-primary btn-sm">
+        <i class="fas fa-edit"></i> Edit
+    </a>
+
+{% endblock %}
