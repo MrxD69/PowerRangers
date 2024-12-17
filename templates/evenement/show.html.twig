@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détail de l'Événement{% endblock %}
+
+{% block body %}
+    <style>
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 12px;
+            background-color: #a52834;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 16px;
+            text-align: center;
+            text-decoration: none;
+            line-height: 1;
+        }
+
+        .btn:hover {
+            background-color: #dc3545;
+        }
+
+        .btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+
+    <div class="container">
+        <div>
+            <div style="text-align: center;">
+                <h1 style="color: #20B2AA; font-weight: bold;">Détail de l'Événement</h1>
+            </div>
+
+            <table class="table">
+                <tbody>
+
+                <tr>
+                    <th style="color: #20B2AA; text-align: left;">Nom :</th>
+                    <td style="font-weight: bold;">{{ evenement.nom }}</td>
+                </tr>
+                <tr>
+                    <th style="color: #20B2AA; text-align: left;">Type :</th>
+                    <td style="font-weight: bold;">{{ evenement.type }}</td>
+                </tr>
+                <tr>
+                    <th style="color: #20B2AA; text-align: left;">Date :</th>
+                    <td style="font-weight: bold;">{{ evenement.date|date('d/m/Y') }}</td>
+                </tr>
+                <tr>
+                    <th style="color: #20B2AA; text-align: left;">Nombre de places disponibles :</th>
+                    <td style="font-weight: bold;">{{ evenement.nbreDispo }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div style="text-align: center;">
+
+        <div class="btn btn-danger">
+            {{ include('evenement/_delete_form.html.twig') }}
+
+        </div>
+        <a href="{{ path('app_evenement_index') }}" style="font-weight: bold;">Retour à la liste</a>
+        <a>|</a>
+        <a href="{{ path('app_evenement_edit', {'id': evenement.id}) }}" style="font-weight: bold;">Modifier</a>
+    </div>
+{% endblock %}

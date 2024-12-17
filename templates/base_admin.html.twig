@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>PowerRanger</title>
+
+    <!-- Add Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a href="{{ path('home_index') }}" class="navbar-brand">Power<b>Rangers</b></a>
+        <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div id="navbarCollapse" class="collapse navbar-collapse justify-content-start">
+            <div class="navbar-nav">
+                <a href="{{ path('app_dashboard') }}" class="nav-item nav-link">Dashboard</a>
+                <a href="{{ path('home_index') }}" class="nav-item nav-link">Home</a>
+                <a href="{{ path('app_project_db_index') }}" class="nav-item nav-link">Projects</a>
+                <a href="{{ path('app_commande_db_index') }}" class="nav-item nav-link">Offers</a>
+            </div>
+            <div class="navbar-nav ms-auto">
+                <a href="" class="btn btn-outline-primary me-2">Login</a>
+                <a href="" class="btn btn-primary">Sign Up</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Custom fonts for this template-->
+    {% block stylesheets %}
+        <link href="{{ asset('vendor1/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
+        <link href="{{ asset('https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i') }}" rel="stylesheet">
+    {% endblock %}
+
+    <!-- Custom styles for this template-->
+    <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
+</head>
+
+<body id="page-top">
+<!-- Page Wrapper -->
+<body id="wrapper">
+<!-- Sidebar -->
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+        <div class="sidebar-brand-text mx-3">PowerRangers </div>
+    </a>
+    <hr class="sidebar-divider my-0">
+    <div class="sidebar-heading"> Interface </div>
+    <li class="nav-item active">
+        <a class="nav-link" href="index.html">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </a>
+    </li>
+    <hr class="sidebar-divider">
+    <div class="sidebar-heading"> Addons </div>
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true" aria-controls="collapsePages">
+            <i class="fas fa-fw fa-folder"></i>
+            <span>Pages</span>
+        </a>
+        <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="login.html">Login</a>
+                <a class="collapse-item" href="register.html">Register</a>
+            </div>
+        </div>
+    </li>
+    <hr class="sidebar-divider d-none d-md-block">
+    <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>
+</ul>
+<!-- End of Sidebar -->
+
+<!-- Main Content -->
+<div class="container mt-4">
+    <h2>Projects by Domain</h2>
+    <!-- Canvas for the doughnut chart -->
+    <canvas id="projectsByDomain" width="400" height="400"></canvas>
+</div>
+
+<!-- JavaScript to create the chart -->
+<script>
+    // Example of how data could look, replace this with dynamic data (from the backend, e.g. via Twig)
+    var projectData = {
+        labels: ['Domain 1', 'Domain 2', 'Domain 3', 'Domain 4'], // Example domain names
+        datasets: [{
+            label: 'Projects by Domain',
+            data: [10, 20, 30, 40], // Example project count per domain
+            backgroundColor: ['#FF5733', '#33FF57', '#3357FF', '#FF33A8'], // Custom segment colors
+            hoverBackgroundColor: ['#FF7043', '#66BB6A', '#42A5F5', '#FF4081'],
+            borderWidth: 1
+        }]
+    };
+
+    var options = {
+        responsive: true,
+        plugins: {
+            legend: { position: 'top' },
+            tooltip: {
+                callbacks: {
+                    label: function(tooltipItem) {
+                        return tooltipItem.label + ': ' + tooltipItem.raw + ' projects';
+                    }
+                }
+            }
+        }
+    };
+
+    var ctx = document.getElementById('projectsByDomain').getContext('2d');
+    var projectChart = new Chart(ctx, {
+        type: 'doughnut', // Doughnut chart
+        data: projectData,
+        options: options
+    });
+</script>
+
+</body>
+</body>
+
+</html>

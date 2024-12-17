@@ -1,10 +1,11 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a href="{{ path('home_index') }}" class="navbar-brand">Power<b>Rangers</b></a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+    <a href="{{ path('home_index') }}" class="navbar-brand">Brand<b>Name</b></a>
+    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div id="navbarCollapse" class="collapse navbar-collapse justify-content-between">
         <div class="navbar-nav">
+            <a href="{{ path('app_dashboard') }}" class="nav-item nav-link">Dashboard</a>
             <a href="{{ path('home_index') }}" class="nav-item nav-link">Home</a>
             <div class="nav-item dropdown">
                 <a href="#" data-bs-toggle="dropdown" class="nav-item nav-link dropdown-toggle">Services</a>
@@ -15,9 +16,12 @@
                     <a href="#" class="dropdown-item">Digital Marketing</a>
                 </div>
             </div>
-            <a href="#" class="nav-item nav-link">Pricing</a>
-            <a href="#" class="nav-item nav-link">Blog</a>
-            <a href="#" class="nav-item nav-link">Contact</a>
+            <a href="{{ path('app_evenement_index') }}" class="nav-item nav-link">Evenement</a>
+            <a href="" class="nav-item nav-link">Blog</a>
+            <a href="" class="nav-item nav-link">Contact</a>
+            {# <a href="{{ path('about_page') }}" class="nav-item nav-link">About</a> #}
+            <a href="{{ path('app_project_db_index') }}" class="nav-item nav-link">Projects</a>
+            <a href="{{ path('app_commande_db_index') }}" class="nav-item nav-link">Offers</a>
         </div>
         <form class="navbar-form form-inline search-form">
             <div class="input-group">

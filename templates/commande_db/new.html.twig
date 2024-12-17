@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create New Offer{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        <h1 class="text-center mb-4">Create New Offer</h1>
+
+        <div class="card border-success shadow-sm p-4">
+            <div class="card-body">
+                {{ include('commande_db/_form2.html.twig') }}
+            </div>
+        </div>
+
+        <div class="mt-4 text-center">
+            <a href="{{ path('app_commande_db_index') }}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+        </div>
+    </div>
+{% endblock %}

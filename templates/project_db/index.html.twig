@@ -1,0 +1,93 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ProjectDb{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="my-4 text-success">Projects</h1>
+
+        <!-- Search Form -->
+        <form method="get" action="{{ path('app_project_db_index') }}" class="mb-3">
+            <input type="text" name="search" value="{{ searchTerm }}" placeholder="Search by domain or description" class="form-control">
+            <button type="submit" class="btn btn-primary mt-2">Search</button>
+        </form>
+
+        <!-- AJAX Search Box -->
+        <form id="search-form" class="mb-3">
+            <input type="text" id="search-query" class="form-control" placeholder="Search project name" />
+        </form>
+
+        <div id="search-results"></div>
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                $('#search-query').on('input', function() {
+                    var query = $(this).val().trim();
+
+                    // Only perform search if the query length is greater than or equal to 3 characters
+                    if (query.length >= 3) {
+                        $.ajax({
+                            url: '{{ path('project_search') }}', // Correct URL for search route
+                            type: 'GET',
+                            data: { query: query },
+                            success: function(response) {
+                                // Clear previous results
+                                var resultsContainer = $('#search-results');
+                                resultsContainer.empty();
+
+                                if (response.length > 0) {
+                                    // Show the matching results as clickable links
+                                    response.forEach(function(project) {
+                                        // Make each project name a clickable link that leads to the project details
+                                        var projectLink = '<p><a href="{{ path('app_project_db_show', {'id': "' + project.id + '"}) }}" class="text-success"><strong>' + project.domaine + '</strong></a>: ' + project.description + '</p>';
+                                        resultsContainer.append(projectLink);
+                                    });
+                                } else {
+                                    resultsContainer.text('No results found');
+                                }
+                            },
+                            error: function() {
+                                alert('Error performing search');
+                            }
+                        });
+                    } else {
+                        $('#search-results').empty(); // Clear results if query is too short
+                    }
+                });
+            });
+        </script>
+
+        <h4 class="text-secondary mb-4">Featured Projects</h4>
+        <div class="row">
+            {% for project_db in project_dbs %}
+                <div class="col-lg-4 col-sm-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h4 class="my-4 text-success">
+                                <a href="{{ path('app_project_db_show', {'id': project_db.id}) }}" class="text-success">
+                                    {{ project_db.domaine }}
+                                </a>
+                            </h4>
+                            <p class="card-text">{{ project_db.description }}</p>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between">
+                            <a href="{{ path('app_project_db_show', {'id': project_db.id}) }}" class="btn btn-secondary">View Details</a>
+                            <a href="{{ path('app_commande_db_new', {'project_id': project_db.id}) }}" class="btn btn-success">Apply</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination for Card Layout -->
+        <div class="d-flex justify-content-center mt-4">
+            {{ knp_pagination_render(project_dbs) }}
+        </div>
+
+        <!-- Create New Project Button -->
+        <div class="mt-4 text-center">
+            <a href="{{ path('app_project_db_new') }}" class="btn btn-success btn-lg">Create New Project</a>
+        </div>
+    </div>
+{% endblock %}
