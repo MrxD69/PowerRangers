@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\ProjectDb;
 use App\Entity\Projet;
 use App\Entity\Reclamation;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -23,7 +24,7 @@ class Reclamation2Type extends AbstractType
                 ],
             ])
             ->add('Projet', EntityType::class, [
-                'class' => Projet::class,
+                'class' => ProjectDb::class,
                 'choice_label' => 'domaine',
                 'placeholder' => 'Sélectionnez un projet',
             ]);
