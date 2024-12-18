@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Reclamation;
 use App\Entity\Reponse;
+use App\Repository\EvenementRepository;
 use App\Repository\ProjectDbRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,6 +17,7 @@ class DashboardController extends AbstractController
 {
     #[Route('/dashboard', name: 'app_dashboard')]
     public function index(
+        EvenementRepository $evenementRepository,
         ProjectDbRepository $projectDbRepository,
         EntityManagerInterface $entityManager,
         ChartBuilderInterface $chartBuilder
@@ -77,13 +79,66 @@ class DashboardController extends AbstractController
         $reponseRepository = $entityManager->getRepository(Reponse::class);
         $reponses = $reponseRepository->findAll();
 
+        // Retrieve evenements from the database
+        $evenements = $evenementRepository->findAll();
+
+        // Prepare data for the participants chart
+        $eventParticipantCounts = [];
+        foreach ($evenements as $evenement) {
+            $eventParticipantCounts[$evenement->getNom()] = count($evenement->getParticipants());
+        }
+
+        $labelsEvents = array_keys($eventParticipantCounts);
+        $dataParticipants = array_values($eventParticipantCounts);
+
+        $chartEvents = $chartBuilder
+            ->createChart(Chart::TYPE_BAR)
+            ->setData([
+                'labels' => $labelsEvents,
+                'datasets' => [
+                    [
+                        'label' => 'Participants per Event',
+                        'backgroundColor' => 'rgba(75, 192, 192, 0.2)',
+                        'borderColor' => 'rgba(75, 192, 192, 1)',
+                        'borderWidth' => 1,
+                        'data' => $dataParticipants,
+                    ],
+                ],
+            ])
+            ->setOptions([
+                'scales' => [
+                    'y' => [
+                        'beginAtZero' => true,
+                        'title' => [
+                            'display' => true,
+                            'text' => 'Number of Participants',
+                        ],
+                    ],
+                    'x' => [
+                        'title' => [
+                            'display' => true,
+                            'text' => 'Events',
+                        ],
+                    ],
+                ],
+            ]);
+
+        // Pass the participant stats for dynamic rendering
+        $eventStats = [
+            'labels' => $labelsEvents,
+            'data' => $dataParticipants,
+        ];
+
         // Render the template with the necessary variables
         return $this->render('base_admin.html.twig', [
             'controller_name' => 'DashboardController',
             'totalProjects' => $totalProjects,
             'chart' => $chart,
+            'chartEvents' => $chartEvents,
             'reclamations' => $reclamations, // Pass reclamations to the template
             'reponses' => $reponses,         // Pass reponses to the template
+            'evenements' => $evenements,     // Pass evenements to the template
+            'eventStats' => $eventStats,     // Data for Participants by Event chart
         ]);
     }
 }

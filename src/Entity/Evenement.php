@@ -6,6 +6,8 @@ use App\Repository\EvenementRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: EvenementRepository::class)]
 class Evenement
@@ -24,29 +26,52 @@ class Evenement
     #[Assert\NotBlank(message: "Le type de l'événement est obligatoire.")]
     private ?string $type = null;
 
- #[ORM\Column(type: Types::DATE_MUTABLE)]
- private ?\DateTimeInterface $date = null;
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTimeInterface $date = null;
 
     #[ORM\Column]
     #[Assert\NotBlank(message: "Le nombre de places est obligatoire.")]
     #[Assert\GreaterThanOrEqual(1, message: "Le nombre de places doit être au moins 1.")]
     private ?int $nbre_dispo = null;
 
-   // #[ORM\Column]
-   // private ?int $id_user = null;
+    // OneToMany relationship to Participant
+    #[ORM\OneToMany(mappedBy: "evenement", targetEntity: Participant::class)]
+    private Collection $participants;
 
-    public function getIdUser(): ?int
+    public function __construct()
     {
-        return $this->id_user;
+        $this->participants = new ArrayCollection();
     }
 
-    public function setIdUser(int $idUser): static
+    // Getter and setter for participants
+    public function getParticipants(): Collection
     {
-        $this->id_user = $idUser;
+        return $this->participants;
+    }
+
+    public function addParticipant(Participant $participant): self
+    {
+        if (!$this->participants->contains($participant)) {
+            $this->participants[] = $participant;
+            $participant->setEvenement($this);
+        }
 
         return $this;
     }
 
+    public function removeParticipant(Participant $participant): self
+    {
+        if ($this->participants->removeElement($participant)) {
+            // Set the owning side to null (unless it's already null)
+            if ($participant->getEvenement() === $this) {
+                $participant->setEvenement(null);
+            }
+        }
+
+        return $this;
+    }
+
+    // Getter and setter for id
     public function getId(): ?int
     {
         return $this->id;
@@ -59,6 +84,7 @@ class Evenement
         return $this;
     }
 
+    // Getter and setter for nom
     public function getNom(): ?string
     {
         return $this->nom;
@@ -71,6 +97,7 @@ class Evenement
         return $this;
     }
 
+    // Getter and setter for type
     public function getType(): ?string
     {
         return $this->type;
@@ -83,6 +110,7 @@ class Evenement
         return $this;
     }
 
+    // Getter and setter for date
     public function getDate(): ?\DateTimeInterface
     {
         return $this->date;
@@ -95,6 +123,7 @@ class Evenement
         return $this;
     }
 
+    // Getter and setter for nbre_dispo
     public function getNbreDispo(): ?int
     {
         return $this->nbre_dispo;
