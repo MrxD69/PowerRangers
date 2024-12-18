@@ -12,11 +12,6 @@
             <button type="submit" class="btn btn-primary mt-2">Search</button>
         </form>
 
-        <!-- AJAX Search Box -->
-        <form id="search-form" class="mb-3">
-            <input type="text" id="search-query" class="form-control" placeholder="Search project name" />
-        </form>
-
         <div id="search-results"></div>
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -73,8 +68,11 @@
                         </div>
                         <div class="card-footer d-flex justify-content-between">
                             <a href="{{ path('app_project_db_show', {'id': project_db.id}) }}" class="btn btn-secondary">View Details</a>
-                            <a href="{{ path('app_commande_db_new', {'project_id': project_db.id}) }}" class="btn btn-success">Apply</a>
+                            {% if is_granted('ROLE_FREELANCER') %}
+                                <a href="{{ path('app_commande_db_new', {'project_id': project_db.id}) }}" class="btn btn-success">Apply</a>
+                            {% endif %}
                         </div>
+
                     </div>
                 </div>
             {% endfor %}
@@ -86,8 +84,12 @@
         </div>
 
         <!-- Create New Project Button -->
-        <div class="mt-4 text-center">
-            <a href="{{ path('app_project_db_new') }}" class="btn btn-success btn-lg">Create New Project</a>
-        </div>
+        <!-- Create New Project Button -->
+        {% if is_granted('ROLE_CLIENT') %}
+            <div class="mt-4 text-center">
+                <a href="{{ path('app_project_db_new') }}" class="btn btn-success btn-lg">Create New Project</a>
+            </div>
+        {% endif %}
+
     </div>
 {% endblock %}
