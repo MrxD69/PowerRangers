@@ -19,6 +19,7 @@
 <div id="wrapper">
     <!-- Sidebar -->
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+        <!-- Sidebar Brand -->
         <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
             <div class="sidebar-brand-text mx-3">PowerRangers</div>
         </a>
@@ -36,6 +37,7 @@
         <li class="nav-item">
             <a href="{{ path('app_evenement_index') }}" class="btn btn-outline-light">
                 Total Evenements
+                <span class="badge badge-light ml-2">{{ evenements|length }}</span>
             </a>
             <a href="{{ path('app_reclamationc') }}" class="btn btn-outline-light">
                 Total Reclamations
@@ -57,8 +59,11 @@
         <div id="content">
             {% include 'partials/navbar.html.twig' %}
 
+            <!-- Main Content -->
             <div class="container-fluid">
+                <!-- Page Heading -->
                 <h1 class="h3 mb-4 text-gray-800">Dashboard</h1>
+
 
                 <!-- Chart Section -->
                 <div class="row">
@@ -85,6 +90,18 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Third Chart: Participants by Event -->
+                    <div class="col-xl-6 col-lg-6">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Participants by Event</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="participantsByEvent" width="400" height="400"></canvas>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -105,6 +122,7 @@
 
 <!-- Chart.js Script -->
 <script>
+    // Projects by Domain
     var projectData = {
         labels: {{ projectDomains|json_encode|raw }},
         datasets: [{
@@ -116,11 +134,69 @@
         }]
     };
 
+    var options = {
+        responsive: true,
+        plugins: {
+            legend: { position: 'top' },
+            tooltip: {
+                callbacks: {
+                    label: function(tooltipItem) {
+                        return tooltipItem.label + ': ' + tooltipItem.raw + ' projects';
+                    }
+                }
+            }
+        }
+    };
+
     var ctx = document.getElementById('projectsByDomain').getContext('2d');
     new Chart(ctx, {
         type: 'doughnut',
         data: projectData
     });
+
+    // Reclamations Overview
+    var ctx2 = document.getElementById('myChart').getContext('2d');
+    var reclamationData = {
+        labels: {{ chart.data.labels|json_encode|raw }},
+        datasets: [{
+            label: 'Number of Reclamations',
+            data: {{ chart.data.datasets[0].data|json_encode|raw }},
+            backgroundColor: ['#FF5733', '#33FF57', '#3357FF', '#FF33A8'],
+            hoverBackgroundColor: ['#FF7043', '#66BB6A', '#42A5F5', '#FF4081'],
+            borderWidth: 1
+        }]
+    };
+
+    var reclamationChart = new Chart(ctx2, {
+        type: 'doughnut',
+        data: reclamationData
+    });
+
+    // Participants by Event
+    var ctx3 = document.getElementById('participantsByEvent').getContext('2d');
+    var eventData = {
+        labels: {{ chartEvents.data.labels|json_encode|raw }},
+        datasets: [{
+            label: 'Participants by Event',
+            data: {{ chartEvents.data.datasets[0].data|json_encode|raw }},
+            backgroundColor: ['#4CAF50', '#FF9800', '#03A9F4', '#E91E63', '#FFC107'],
+            hoverBackgroundColor: ['#81C784', '#FFB74D', '#64B5F6', '#F06292', '#FFD54F'],
+            borderWidth: 1
+        }]
+    };
+
+    var eventChart = new Chart(ctx3, {
+        type: 'doughnut',
+        data: eventData
+    });
 </script>
+
+<style>
+    #myChart, #participantsByEvent, #projectsByDomain {
+        width: 100%;
+        height: auto;
+        max-height: 400px;
+    }
+</style>
 </body>
 </html>

@@ -32,18 +32,13 @@ class ProjectDb
     )]
     private ?string $description = null;
 
-    // Getters and Setters
+    #[ORM\ManyToOne(targetEntity: "App\Entity\User", inversedBy: "projects")]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $client = null;
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
     }
 
     public function getDomaine(): ?string
@@ -51,10 +46,9 @@ class ProjectDb
         return $this->domaine;
     }
 
-    public function setDomaine(string $domaine): static
+    public function setDomaine(string $domaine): self
     {
         $this->domaine = $domaine;
-
         return $this;
     }
 
@@ -63,10 +57,20 @@ class ProjectDb
         return $this->description;
     }
 
-    public function setDescription(?string $description): static
+    public function setDescription(?string $description): self
     {
         $this->description = $description;
+        return $this;
+    }
 
+    public function getClient(): ?User
+    {
+        return $this->client;
+    }
+
+    public function setClient(?User $client): self
+    {
+        $this->client = $client;
         return $this;
     }
 }

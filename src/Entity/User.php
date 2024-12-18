@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Enum\UserRole;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -56,46 +58,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: "string", length: 255, nullable: true)]
     private ?string $profilePicture = null;
 
-    #[ORM\Column(type: "json", nullable: true)]
-    private ?array $progressBars = [];
+    #[ORM\OneToMany(mappedBy: "client", targetEntity: ProjectDb::class, cascade: ["persist", "remove"])]
+    private Collection $projects;
 
-    public function getProgressBars(): ?array
+    public function __construct()
     {
-        return $this->progressBars;
+        $this->projects = new ArrayCollection();
     }
 
-    public function setProgressBars(?array $progressBars): self
-    {
-        $this->progressBars = $progressBars;
-        return $this;
-    }
-
-    //social links
+    // Social Links
     #[ORM\Column(type: "string", length: 255, nullable: true)]
     #[Assert\Url]
-
     private ?string $twitter = null;
 
     #[ORM\Column(type: "string", length: 255, nullable: true)]
     #[Assert\Url]
-
     private ?string $facebook = null;
 
     #[ORM\Column(type: "string", length: 255, nullable: true)]
     #[Assert\Url]
-
     private ?string $instagram = null;
 
     #[ORM\Column(type: "string", length: 255, nullable: true)]
     #[Assert\Url]
-
     private ?string $linkedin = null;
 
     #[ORM\Column(type: "string", length: 255, nullable: true)]
     #[Assert\Url]
-
     private ?string $github = null;
 
+    // Getters and Setters for Social Links
     public function getTwitter(): ?string
     {
         return $this->twitter;
@@ -151,13 +143,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    //end social links
-
-    public function getFullName(): string
-    {
-        return $this->nom . ' ' . $this->prenom;
-    }
-
+    // General Methods
     public function getId(): ?int
     {
         return $this->id;
@@ -284,15 +270,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getProjects(): Collection
+    {
+        return $this->projects;
+    }
+
+    public function addProject(ProjectDb $project): self
+    {
+        if (!$this->projects->contains($project)) {
+            $this->projects->add($project);
+            $project->setClient($this);
+        }
+        return $this;
+    }
+
+    public function removeProject(ProjectDb $project): self
+    {
+        if ($this->projects->removeElement($project) && $project->getClient() === $this) {
+            $project->setClient(null);
+        }
+        return $this;
+    }
+
     public function getRoles(): array
     {
-        // Return an array of roles expected by Symfony
         return [$this->role->value];
     }
 
     public function eraseCredentials(): void
     {
-        // Clear sensitive data if necessary
     }
 
     public function getUserIdentifier(): string
