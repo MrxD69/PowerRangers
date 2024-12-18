@@ -35,4 +35,5 @@ security:
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/freelancer, roles: ROLE_FREELANCER }
         - { path: ^/, roles: PUBLIC_ACCESS }
-        - { path: ^/project/db, roles: PUBLIC_ACCESS }# Allow homepage for unauthenticated users
+        - { path: ^/project/db, roles: PUBLIC_ACCESS } # Allow homepage for unauthenticated users
+        - { path: ^/reponse/l, roles: ROLE_ADMIN }

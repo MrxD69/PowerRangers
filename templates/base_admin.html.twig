@@ -12,16 +12,19 @@
 
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
 </head>
 <body id="page-top">
 <!-- Wrapper -->
 <div id="wrapper">
-    {# Sidebar Partial #}
+    <!-- Sidebar -->
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+        <!-- Sidebar Brand -->
         <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
             <div class="sidebar-brand-text mx-3">PowerRangers</div>
         </a>
         <hr class="sidebar-divider my-0">
+
         <li class="nav-item active">
             <a class="nav-link" href="#">
                 <i class="fas fa-fw fa-tachometer-alt"></i>
@@ -29,30 +32,25 @@
             </a>
         </li>
         <hr class="sidebar-divider">
+
         <div class="sidebar-heading">Addons</div>
         <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true" aria-controls="collapsePages">
-                <i class="fas fa-fw fa-folder"></i>
-                <span>Pages</span>
+            <a href="{{ path('app_reclamationc') }}" class="btn btn-outline-light">
+                Total Reclamations
+                <span class="badge badge-light ml-2">{{ reclamations|length }}</span> <!-- Total Reclamations -->
             </a>
-            <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <a class="collapse-item" href="#">Login</a>
-                    <a class="collapse-item" href="#">Register</a>
-                </div>
-            </div>
+            <a href="{{ path('app_reponse_index') }}" class="btn btn-outline-light">
+                Total Reponses
+                <span class="badge badge-light ml-2">{{ reponses|length }}</span>
+            </a>
         </li>
-        <hr class="sidebar-divider d-none d-md-block">
-        <div class="text-center d-none d-md-inline">
-            <button class="rounded-circle border-0" id="sidebarToggle"></button>
-        </div>
     </ul>
     <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
         <div id="content">
-            {# Include Navbar Partial #}
+            <!-- Navbar -->
             {% include 'partials/navbar.html.twig' %}
 
             <!-- Main Content -->
@@ -60,8 +58,10 @@
                 <!-- Page Heading -->
                 <h1 class="h3 mb-4 text-gray-800">Dashboard</h1>
 
+
                 <!-- Chart Section -->
                 <div class="row">
+                    <!-- First Chart -->
                     <div class="col-xl-6 col-lg-6">
                         <div class="card shadow mb-4">
                             <div class="card-header py-3">
@@ -69,6 +69,18 @@
                             </div>
                             <div class="card-body">
                                 <canvas id="projectsByDomain" width="400" height="400"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Second Chart -->
+                    <div class="col-xl-6 col-lg-6">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Reclamations Overview</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="myChart"></canvas>
                             </div>
                         </div>
                     </div>
@@ -128,6 +140,49 @@
         data: projectData,
         options: options
     });
+
+    //////////////////////////////////////////////////////////////
+
+    var ctx2 = document.getElementById('myChart').getContext('2d');
+
+    var reclamationData = {
+        labels: {{ chart.data.labels|json_encode|raw }},
+        datasets: [{
+            label: 'Number of Reclamations',
+            data: {{ chart.data.datasets[0].data|json_encode|raw }},
+            backgroundColor: ['#FF5733', '#33FF57', '#3357FF', '#FF33A8'],
+            hoverBackgroundColor: ['#FF7043', '#66BB6A', '#42A5F5', '#FF4081'],
+            borderWidth: 1
+        }]
+    };
+
+    var reclamationOptions = {
+        responsive: true,
+        plugins: {
+            legend: { position: 'top' },
+            tooltip: {
+                callbacks: {
+                    label: function(tooltipItem) {
+                        return tooltipItem.label + ': ' + tooltipItem.raw + ' reclamations';
+                    }
+                }
+            }
+        }
+    };
+
+    var reclamationChart = new Chart(ctx2, {
+        type: 'doughnut',
+        data: reclamationData,
+        options: reclamationOptions
+    });
 </script>
+
+<style>
+    #myChart {
+        width: 100%;
+        height: auto;
+        max-height: 400px;
+    }
+</style>
 </body>
 </html>
