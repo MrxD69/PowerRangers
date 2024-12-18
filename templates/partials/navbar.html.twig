@@ -16,7 +16,7 @@
                     <a href="#" class="dropdown-item">Digital Marketing</a>
                 </div>
             </div>
-            <a href="{{ path('app_evenement_index') }}" class="nav-item nav-link">Evenement</a>
+            <a href="{{ path('app_evenement_client') }}" class="nav-item nav-link">Evenement</a>
             <a href="{{ path('app_reclamation_index') }}" class="nav-item nav-link">Reclamation</a>
             <a href="" class="nav-item nav-link">Contact</a>
             {# <a href="{{ path('about_page') }}" class="nav-item nav-link">About</a> #}
@@ -40,6 +40,7 @@
                               {{ path('get_freelancer_profile', { id: app.user.id }) }}
                           {% elseif app.user.role.value == 'ROLE_CLIENT' %}
                               {{ path('get_client_profile', { id: app.user.id }) }}
+
                           {% else %}
                               {{ path('home_index') }}
                           {% endif %}"

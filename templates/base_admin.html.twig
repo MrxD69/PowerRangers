@@ -35,22 +35,25 @@
 
         <div class="sidebar-heading">Addons</div>
         <li class="nav-item">
-            <a href="{{ path('app_reclamationc') }}" class="btn btn-outline-light">
-                Total Reclamations
-                <span class="badge badge-light ml-2">{{ reclamations|length }}</span> <!-- Total Reclamations -->
+            <a href="{{ path('app_evenement_index') }}" class="btn btn-primary">
+                Evenements
             </a>
             <a href="{{ path('app_reponse_index') }}" class="btn btn-outline-light">
                 Total Reponses
                 <span class="badge badge-light ml-2">{{ reponses|length }}</span>
             </a>
         </li>
+        <hr class="sidebar-divider d-none d-md-block">
+        <div class="text-center d-none d-md-inline">
+            <button class="rounded-circle border-0" id="sidebarToggle"></button>
+        </div>
     </ul>
     <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
         <div id="content">
-            <!-- Navbar -->
+            {# Include Navbar Partial #}
             {% include 'partials/navbar.html.twig' %}
 
             <!-- Main Content -->
