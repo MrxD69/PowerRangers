@@ -14,7 +14,6 @@ class ProjectDbRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, ProjectDb::class);
     }
-
     /**
      * Search projects by domain or description.
      *
