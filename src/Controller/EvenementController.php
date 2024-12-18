@@ -30,6 +30,21 @@ final class EvenementController extends AbstractController
         ]);
     }
 
+    // Separate route for /evenementClient
+    #[Route('/evenementClient', name: 'app_evenement_client', methods: ['GET'])]
+    public function indexclient(Request $request, EvenementRepository $evenementRepository): Response
+    {
+        $search = $request->query->get('search', '');
+        $evenements = $search
+            ? $evenementRepository->findByName($search)
+            : $evenementRepository->findAll();
+
+        return $this->render('evenement/evenementClient.html.twig', [
+            'evenements' => $evenements,
+            'search' => $search,
+        ]);
+    }
+
     #[Route('/new', name: 'app_evenement_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -106,5 +121,4 @@ final class EvenementController extends AbstractController
 
         return $this->redirectToRoute('app_evenement_index', [], Response::HTTP_SEE_OTHER);
     }
-
 }

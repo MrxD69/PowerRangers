@@ -37,7 +37,7 @@ final class ReponseController extends AbstractController
         $pagination = $paginator->paginate(
             $reclamations,
             $request->query->getInt('page', 1),
-            4
+            2
         );
 
         return $this->render('reponse/indexRl.html.twig', [
@@ -73,7 +73,7 @@ final class ReponseController extends AbstractController
             $entityManager->persist($reponse);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_reponse_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_reclamationc', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('reponse/new.html.twig', [

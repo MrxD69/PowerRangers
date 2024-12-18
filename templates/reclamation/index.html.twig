@@ -19,7 +19,7 @@
             </div>
             <div class="col-md-9">
                 <div class="contact-form">
-                    <h1>Reclamation</h1>
+                    <h1>Reclamations</h1>
                     <input type="text" id="searchInput" class="form-control mb-3" placeholder="Search for reclamation...">
                     <br>
                     <!-- <p>Total Reclamations: {{ reclamations|length }}</p> -->
@@ -74,27 +74,6 @@
                     </form>
 
                     <a href="{{ path('app_reclamation_new') }}" class="btn btn-success mt-3">Ajouter Reclamation</a>
-
-                    <!-- Tableau Statistique -->
-                    <div class="mt-5">
-                        <h2>Reclamation Statistics</h2>
-                        <table class="table table-bordered">
-                            <thead class="thead-light">
-                            <tr>
-                                <th>Total Reclamations</th>
-                                <th>Reclamations Traitées</th>
-                                <th>Reclamations Non Traitées</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td>{{ reclamations|length }}</td>
-                                <td>{{ reclamations|filter(r => r.etat == 'traité')|length }}</td>
-                                <td>{{ reclamations|filter(r => r.etat == 'non traité')|length }}</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
                 </div>
             </div>
         </div>

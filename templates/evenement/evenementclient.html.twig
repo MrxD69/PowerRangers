@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Evenement index{% endblock %}
+
+{% block body %}
+    <h1 class="text-center my-4">Evenements</h1>
+
+    <div class="container">
+        <!-- Formulaire de recherche -->
+        <form method="get" action="{{ path('app_evenement_client') }}" class="mb-4">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" placeholder="Rechercher un événement" value="{{ search }}">
+                <button type="submit" class="btn btn-primary">Rechercher</button>
+            </div>
+        </form>
+
+        <!-- Liste des événements -->
+        <div class="row">
+            {% for evenement in evenements %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="single-schedules-inner card shadow-sm">
+                        <div class="date p-3">
+                            <i class="fa fa-clock-o"></i>
+                            {{ evenement.date ? evenement.date|date('Y-m-d H:i') : 'Date non définie' }}
+                        </div>
+                        <h5 class="card-title px-3">{{ evenement.nom }}</h5>
+                        <p class="card-text px-3">
+                            Type : {{ evenement.type }}<br>
+                            Places disponibles : {{ evenement.nbreDispo }}
+                        </p>
+                        <div class="card-footer text-center">
+                            <a href="{{ path('app_evenement_show', {'id': evenement.id}) }}" class="btn btn-primary btn-sm">Voir</a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <p class="text-center">Aucun événement trouvé.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
