@@ -44,7 +44,6 @@
                                     <td>{{ reclamation.date ? reclamation.date|date('Y-m-d') : '' }}</td>
                                     <td>{{ reclamation.etat }}</td>
                                     <td>{{ reclamation.message }}</td>
-                                    <td>{{ reclamation.projectDb.domaine }}</td>
 
                                     <td>
                                         <a href="{{ path('app_reclamation_show', {'id': reclamation.id}) }}" class="btn btn-primary btn-sm">Consulter</a>
@@ -53,10 +52,14 @@
 
                                         <form action="{{ path('app_reclamation_delete', {'id': reclamation.id}) }}" method="post" style="display: inline;">
                                             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reclamation.id) }}">
+                                            {% if is_granted('ROLE_ADMIN') %}
+
                                             <button type="submit" class="btn btn-sm btn-primary" style="width: 100px; background-color: maroon;"
                                                     {{ reclamation.etat == 'non traité' ? '' : 'disabled' }}
                                                     onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette réclamation ?')">Supprimer
                                             </button>
+                                            {% endif %}
+
                                         </form>
                                     </td>
                                 </tr>
@@ -69,8 +72,12 @@
                         </table>
 
                         <!-- "Delete Multiple" Button -->
+                        {% if is_granted('ROLE_ADMIN') %}
+
                         <input type="hidden" name="_token" value="{{ csrf_token('delete_multiple') }}">
                         <button type="submit"  class="btn btn-success mt-3">Supprimer tous</button>
+                        {% endif %}
+
                     </form>
 
                     <a href="{{ path('app_reclamation_new') }}" class="btn btn-success mt-3">Ajouter Reclamation</a>

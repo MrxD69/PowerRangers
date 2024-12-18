@@ -35,13 +35,19 @@
                                 <a href="{{ path('app_commande_db_show', {'id': commande_db.id}) }}" class="btn btn-primary btn-sm">
                                     <i class="bi bi-eye"></i> Show
                                 </a>
-                                <a href="{{ path('app_commande_db_edit', {'id': commande_db.id}) }}" class="btn btn-warning btn-sm">
-                                    <i class="bi bi-pencil"></i> Edit
-                                </a>
+                                {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_FREELANCER') %}
+                                    <a href="{{ path('app_commande_db_edit', {'id': commande_db.id}) }}" class="btn btn-warning btn-sm">
+                                        <i class="bi bi-pencil"></i> Edit
+                                    </a>
+
+                                    {{ include('commande_db/_delete_form.html.twig', { 'id': commande_db.id }) }}
+                                {% endif %}
                                 <a href="{{ path('app_commande_db_pdf', {'id': commande_db.id}) }}" class="btn btn-success btn-sm">
                                     <i class="bi bi-file-earmark-pdf"></i> PDF
                                 </a>
-                                {{ include('commande_db/_delete_form.html.twig', { 'id': commande_db.id }) }}
+                                {% if is_granted('ROLE_CLIENT') or is_granted('ROLE_ADMIN') %}
+                                <a href="{{ path('app_reclamation_new', {'id': commande_db.id}) }}" class="btn btn-danger">Create Reclamation</a>
+                                {% endif %}
                             </div>
                         </td>
                     </tr>
@@ -51,9 +57,11 @@
         </div>
 
         <div class="text-center mt-4">
-            <a href="{{ path('app_commande_db_new') }}" class="btn btn-success">
-                <i class="bi bi-plus-circle"></i> Create New
-            </a>
+            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_FREELANCER') %}
+                <a href="{{ path('app_commande_db_new') }}" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> Create New
+                </a>
+            {% endif %}
         </div>
     </div>
 

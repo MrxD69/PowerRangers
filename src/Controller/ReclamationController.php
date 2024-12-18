@@ -51,7 +51,13 @@ final class ReclamationController extends AbstractController
             $entityManager->persist($reclamation);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_reclamation_index', [], Response::HTTP_SEE_OTHER);
+            if ($this->isGranted('ROLE_CLIENT')) {
+                return $this->redirectToRoute('app_commande_db_index',[], Response::HTTP_SEE_OTHER);
+            }
+
+            if ($this->isGranted('ROLE_FREELANCER')) {
+                return $this->redirectToRoute('app_project_db_index',[], Response::HTTP_SEE_OTHER);
+            }
         }
 
         return $this->render('reclamation/new.html.twig', [

@@ -10,34 +10,14 @@
                 <a href="{{ path('app_dashboard') }}" class="nav-item nav-link">Dashboard</a>
             {% endif %}
             <a href="{{ path('app_project_db_index') }}" class="nav-item nav-link">Home</a>
-            <div class="nav-item dropdown">
-                <a href="#" data-bs-toggle="dropdown" class="nav-item nav-link dropdown-toggle">Projets</a>
-                <div class="dropdown-menu">
-                    <a href="#" class="dropdown-item">Web Design</a>
-                    <a href="#" class="dropdown-item">Web Development</a>
-                    <a href="#" class="dropdown-item">Graphic Design</a>
-                    <a href="#" class="dropdown-item">Digital Marketing</a>
-                </div>
-            </div>
+            {% if is_granted('ROLE_CLIENT') or is_granted('ROLE_FREELANCER')  %}
             <a href="{{ path('app_evenement_client') }}" class="nav-item nav-link">Evenement</a>
-            <a href="{{ path('app_reclamation_index') }}" class="nav-item nav-link">Reclamation</a>
-            <a href="#" class="nav-item nav-link">Contact</a>
-            <a href="{{ path('app_project_db_index') }}" class="nav-item nav-link">Projects</a>
+            {% endif %}
             <a href="{{ path('app_commande_db_index') }}" class="nav-item nav-link">Offers</a>
         </div>
 
 
         <!-- Search Form -->
-        <form class="navbar-form form-inline search-form">
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search...">
-                <span class="input-group-btn">
-                    <button type="button" class="btn btn-default">
-                        <i class="fa fa-search"></i>
-                    </button>
-                </span>
-            </div>
-        </form>
 
         <!-- Authentication Buttons -->
         <div class="navbar-nav auth-buttons">
@@ -63,4 +43,5 @@
             {% endif %}
         </div>
     </div>
+
 </nav>

@@ -5,12 +5,6 @@
     {{ form_errors(form.message) }}
 </div>
 
-<div class="form-group">
-    {{ form_label(form.projectDb) }}
-    {{ form_widget(form.projectDb, {'attr': {'class': 'form-control'}}) }}
-    {{ form_errors(form.projectDb) }}
-</div>
-
 <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
 {{ form_end(form) }}
 

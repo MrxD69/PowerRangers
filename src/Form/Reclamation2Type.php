@@ -22,12 +22,7 @@ class Reclamation2Type extends AbstractType
                     'rows' => 5,
                 ],
             ])
-            ->add('projectDb', EntityType::class, [ // Changed 'Projet' to 'projectDb'
-                'class' => ProjectDb::class,
-                'choice_label' => 'domaine',
-                'placeholder' => 'Sélectionnez un projet',
-                'label' => 'Projet', // Optional: Keep user-visible label as "Projet"
-            ]);
+            ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

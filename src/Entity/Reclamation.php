@@ -35,7 +35,6 @@ class Reclamation
     private ?string $message = null;
 
     #[ORM\ManyToOne]
-    #[Assert\NotNull(message: 'Veuillez sélectionner un projet.')]
     private ?ProjectDb $projectDb = null;
 
     #[ORM\ManyToOne]

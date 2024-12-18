@@ -43,7 +43,7 @@ final class ParticipantController extends AbstractController{
             $entityManager->persist($participant);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_participant_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_evenement_client', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('participant/new.html.twig', [

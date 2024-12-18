@@ -78,16 +78,7 @@ class ParticipantType extends AbstractType
                     ]),
                 ],
             ])
-            ->add('evenement', EntityType::class, [
-                'class' => Evenement::class,
-                'choice_label' => 'nom', // Utilise la colonne `nom` pour afficher les choix
-                'placeholder' => 'Choisir un événement',
-                'constraints' => [
-                    new Assert\NotBlank([
-                        'message' => 'L\'événement doit être sélectionné.',
-                    ]),
-                ],
-            ])
+
         ;
     }
 

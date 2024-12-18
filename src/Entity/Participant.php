@@ -32,8 +32,7 @@ class Participant
     // #[ORM\Column]
     // private ?int $id_Event = null;
 
-    #[ORM\ManyToOne(targetEntity: Evenement::class)]
-    #[ORM\JoinColumn(name: "id_event", referencedColumnName: "id", nullable: false)] // La colonne de la clé étrangère
+    #[ORM\ManyToOne(targetEntity: Evenement::class)] // La colonne de la clé étrangère
     private ?Evenement $evenement = null;
 
     public function getEvenement(): ?Evenement

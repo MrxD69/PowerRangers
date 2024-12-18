@@ -124,11 +124,6 @@
                 {{ form_widget(form.num_telephone, {'attr': {'placeholder':'Numéro de téléphone'}}) }}
                 {{ form_errors(form.num_telephone, { 'attr': {class: 'text-danger'} }) }}
             </div>
-            <div class="form-group">
-                <label for="numTelephone">Evenement  :</label>
-                {{ form_widget(form.evenement, {'attr': {'placeholder':'Numéro de téléphone'}}) }}
-                {{ form_errors(form.evenement, { 'attr': {class: 'text-danger'} }) }}
-            </div>
 
             <div class="form-group">
                 <button type="submit" class="btn">Ajouter</button>
@@ -139,7 +134,7 @@
     </div>
 
     <div class="footer">
-        <a href="{{ path('app_participant_index') }}">Retour à la liste</a>
+        <a href="{{ path('app_evenement_client') }}">Retour à la liste</a>
     </div>
 
 {% endblock %}
