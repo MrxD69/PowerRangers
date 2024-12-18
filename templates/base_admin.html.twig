@@ -19,7 +19,6 @@
 <div id="wrapper">
     <!-- Sidebar -->
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-        <!-- Sidebar Brand -->
         <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
             <div class="sidebar-brand-text mx-3">PowerRangers</div>
         </a>
@@ -52,35 +51,30 @@
             <button class="rounded-circle border-0" id="sidebarToggle"></button>
         </div>
     </ul>
-    <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
         <div id="content">
-            {# Include Navbar Partial #}
             {% include 'partials/navbar.html.twig' %}
 
-            <!-- Main Content -->
             <div class="container-fluid">
-                <!-- Page Heading -->
                 <h1 class="h3 mb-4 text-gray-800">Dashboard</h1>
-
 
                 <!-- Chart Section -->
                 <div class="row">
-                    <!-- First Chart -->
+                    <!-- Projects by Domain Chart -->
                     <div class="col-xl-6 col-lg-6">
                         <div class="card shadow mb-4">
                             <div class="card-header py-3">
                                 <h6 class="m-0 font-weight-bold text-primary">Projects by Domain</h6>
                             </div>
                             <div class="card-body">
-                                <canvas id="projectsByDomain" width="400" height="400"></canvas>
+                                <canvas id="projectsByDomain"></canvas>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Second Chart -->
+                    <!-- Reclamations Overview Chart -->
                     <div class="col-xl-6 col-lg-6">
                         <div class="card shadow mb-4">
                             <div class="card-header py-3">
@@ -93,10 +87,8 @@
                     </div>
                 </div>
             </div>
-            <!-- End of Main Content -->
         </div>
 
-        <!-- Footer -->
         <footer class="sticky-footer bg-white">
             <div class="container my-auto">
                 <div class="copyright text-center my-auto">
@@ -104,12 +96,9 @@
                 </div>
             </div>
         </footer>
-        <!-- End of Footer -->
     </div>
 </div>
-<!-- End of Wrapper -->
 
-<!-- Scripts -->
 <script src="{{ asset('vendor1/jquery/jquery.min.js') }}"></script>
 <script src="{{ asset('vendor1/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
@@ -117,79 +106,21 @@
 <!-- Chart.js Script -->
 <script>
     var projectData = {
-        labels: ['Domain 1', 'Domain 2', 'Domain 3', 'Domain 4'],
+        labels: {{ projectDomains|json_encode|raw }},
         datasets: [{
             label: 'Projects by Domain',
-            data: [10, 20, 30, 40],
-            backgroundColor: ['#FF5733', '#33FF57', '#3357FF', '#FF33A8'],
-            hoverBackgroundColor: ['#FF7043', '#66BB6A', '#42A5F5', '#FF4081'],
+            data: {{ projectCounts|json_encode|raw }},
+            backgroundColor: ['#FF5733', '#33FF57', '#3357FF', '#FF33A8', '#FFC300'],
+            hoverBackgroundColor: ['#FF7043', '#66BB6A', '#42A5F5', '#FF4081', '#FFD54F'],
             borderWidth: 1
         }]
-    };
-
-    var options = {
-        responsive: true,
-        plugins: {
-            legend: { position: 'top' },
-            tooltip: {
-                callbacks: {
-                    label: function(tooltipItem) {
-                        return tooltipItem.label + ': ' + tooltipItem.raw + ' projects';
-                    }
-                }
-            }
-        }
     };
 
     var ctx = document.getElementById('projectsByDomain').getContext('2d');
-    var projectChart = new Chart(ctx, {
+    new Chart(ctx, {
         type: 'doughnut',
-        data: projectData,
-        options: options
-    });
-
-    //////////////////////////////////////////////////////////////
-
-    var ctx2 = document.getElementById('myChart').getContext('2d');
-
-    var reclamationData = {
-        labels: {{ chart.data.labels|json_encode|raw }},
-        datasets: [{
-            label: 'Number of Reclamations',
-            data: {{ chart.data.datasets[0].data|json_encode|raw }},
-            backgroundColor: ['#FF5733', '#33FF57', '#3357FF', '#FF33A8'],
-            hoverBackgroundColor: ['#FF7043', '#66BB6A', '#42A5F5', '#FF4081'],
-            borderWidth: 1
-        }]
-    };
-
-    var reclamationOptions = {
-        responsive: true,
-        plugins: {
-            legend: { position: 'top' },
-            tooltip: {
-                callbacks: {
-                    label: function(tooltipItem) {
-                        return tooltipItem.label + ': ' + tooltipItem.raw + ' reclamations';
-                    }
-                }
-            }
-        }
-    };
-
-    var reclamationChart = new Chart(ctx2, {
-        type: 'doughnut',
-        data: reclamationData,
-        options: reclamationOptions
+        data: projectData
     });
 </script>
-
-<style>
-    #myChart {
-        width: 100%;
-        height: auto;
-        max-height: 400px;
-    }
-</style>
 </body>
 </html>

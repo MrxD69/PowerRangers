@@ -6,7 +6,9 @@
     <div id="navbarCollapse" class="collapse navbar-collapse justify-content-between">
         <!-- Navigation Links -->
         <div class="navbar-nav">
-            <a href="{{ path('app_dashboard') }}" class="nav-item nav-link">Dashboard</a>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_dashboard') }}" class="nav-item nav-link">Dashboard</a>
+            {% endif %}
             <a href="{{ path('app_project_db_index') }}" class="nav-item nav-link">Home</a>
             <div class="nav-item dropdown">
                 <a href="#" data-bs-toggle="dropdown" class="nav-item nav-link dropdown-toggle">Projets</a>
@@ -21,9 +23,9 @@
             <a href="{{ path('app_reclamation_index') }}" class="nav-item nav-link">Reclamation</a>
             <a href="#" class="nav-item nav-link">Contact</a>
             <a href="{{ path('app_project_db_index') }}" class="nav-item nav-link">Projects</a>
-
             <a href="{{ path('app_commande_db_index') }}" class="nav-item nav-link">Offers</a>
         </div>
+
 
         <!-- Search Form -->
         <form class="navbar-form form-inline search-form">

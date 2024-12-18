@@ -130,4 +130,5 @@ final class ProjectDbController extends AbstractController
 
         return $this->redirectToRoute('app_project_db_index', [], Response::HTTP_SEE_OTHER);
     }
+
 }
