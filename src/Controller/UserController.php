@@ -195,4 +195,18 @@ class UserController extends AbstractController
         ]);
     }
 
+    #[Route('/admin/profile', name: 'get_admin_private_profile', methods: ['GET'])]
+    public function getAdminPrivateProfile(): Response
+    {
+        $user = $this->getUser();
+
+        if (!$user || $user->getRole() !== UserRole::ROLE_ADMIN) {
+            throw $this->createAccessDeniedException('Access denied.');
+        }
+
+        return $this->render('admin/admin_profile.html.twig', [
+            'user' => $user,
+        ]);
+    }
+
 }

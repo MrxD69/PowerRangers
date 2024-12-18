@@ -4,6 +4,7 @@
         <span class="navbar-toggler-icon"></span>
     </button>
     <div id="navbarCollapse" class="collapse navbar-collapse justify-content-between">
+        <!-- Navigation Links -->
         <div class="navbar-nav">
             <a href="{{ path('app_dashboard') }}" class="nav-item nav-link">Dashboard</a>
             <a href="{{ path('app_project_db_index') }}" class="nav-item nav-link">Home</a>
@@ -18,11 +19,13 @@
             </div>
             <a href="{{ path('app_evenement_client') }}" class="nav-item nav-link">Evenement</a>
             <a href="{{ path('app_reclamation_index') }}" class="nav-item nav-link">Reclamation</a>
-            <a href="" class="nav-item nav-link">Contact</a>
-            {# <a href="{{ path('about_page') }}" class="nav-item nav-link">About</a> #}
+            <a href="#" class="nav-item nav-link">Contact</a>
             <a href="{{ path('app_project_db_index') }}" class="nav-item nav-link">Projects</a>
+
             <a href="{{ path('app_commande_db_index') }}" class="nav-item nav-link">Offers</a>
         </div>
+
+        <!-- Search Form -->
         <form class="navbar-form form-inline search-form">
             <div class="input-group">
                 <input type="text" class="form-control" placeholder="Search...">
@@ -33,14 +36,17 @@
                 </span>
             </div>
         </form>
+
+        <!-- Authentication Buttons -->
         <div class="navbar-nav auth-buttons">
             {% if app.user %}
-                <!-- Show when user is logged in -->
+                <!-- When user is logged in -->
                 <a href="{% if app.user.role.value == 'ROLE_FREELANCER' %}
-                              {{ path('get_freelancer_profile', { id: app.user.id }) }}
+                              {{ path('get_freelancer_private_profile') }}
                           {% elseif app.user.role.value == 'ROLE_CLIENT' %}
                               {{ path('get_client_profile', { id: app.user.id }) }}
-
+                          {% elseif app.user.role.value == 'ROLE_ADMIN' %}
+                              {{ path('get_admin_private_profile') }}
                           {% else %}
                               {{ path('home_index') }}
                           {% endif %}"
@@ -49,7 +55,7 @@
                 </a>
                 <a href="{{ path('app_logout') }}" class="btn btn-danger">Logout</a>
             {% else %}
-                <!-- Show when user is not logged in -->
+                <!-- When user is not logged in -->
                 <a href="{{ path('app_login') }}" class="btn btn-outline-primary mr-2">Login</a>
                 <a href="{{ path('app_register') }}" class="btn btn-primary">Sign Up</a>
             {% endif %}
