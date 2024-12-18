@@ -35,8 +35,12 @@
 
         <div class="sidebar-heading">Addons</div>
         <li class="nav-item">
-            <a href="{{ path('app_evenement_index') }}" class="btn btn-primary">
-                Evenements
+            <a href="{{ path('app_evenement_index') }}" class="btn btn-outline-light">
+                Total Evenements
+            </a>
+            <a href="{{ path('app_reclamationc') }}" class="btn btn-outline-light">
+                Total Reclamations
+                <span class="badge badge-light ml-2">{{ reclamations|length }}</span>
             </a>
             <a href="{{ path('app_reponse_index') }}" class="btn btn-outline-light">
                 Total Reponses
