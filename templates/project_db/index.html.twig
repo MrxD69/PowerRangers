@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}ProjectDb{% endblock %}
+{% block title %}Projects{% endblock %}
 
 {% block body %}
     <div class="container mt-5">
@@ -20,21 +20,17 @@
                 $('#search-query').on('input', function() {
                     var query = $(this).val().trim();
 
-                    // Only perform search if the query length is greater than or equal to 3 characters
                     if (query.length >= 3) {
                         $.ajax({
-                            url: '{{ path('project_search') }}', // Correct URL for search route
+                            url: '{{ path('project_search') }}',
                             type: 'GET',
                             data: { query: query },
                             success: function(response) {
-                                // Clear previous results
                                 var resultsContainer = $('#search-results');
                                 resultsContainer.empty();
 
                                 if (response.length > 0) {
-                                    // Show the matching results as clickable links
                                     response.forEach(function(project) {
-                                        // Make each project name a clickable link that leads to the project details
                                         var projectLink = '<p><a href="{{ path('app_project_db_show', {'id': "' + project.id + '"}) }}" class="text-success"><strong>' + project.domaine + '</strong></a>: ' + project.description + '</p>';
                                         resultsContainer.append(projectLink);
                                     });
@@ -47,7 +43,7 @@
                             }
                         });
                     } else {
-                        $('#search-results').empty(); // Clear results if query is too short
+                        $('#search-results').empty();
                     }
                 });
             });
@@ -67,12 +63,17 @@
                             <p class="card-text">{{ project_db.description }}</p>
                         </div>
                         <div class="card-footer d-flex justify-content-between">
+                            <div>
+                                <strong>Client:</strong>
+                                <a href="{{ path('get_client_profile', {'id': project_db.client.id}) }}" class="text-success">
+                                    {{ project_db.client.nom }} {{ project_db.client.prenom }}
+                                </a>
+                            </div>
                             <a href="{{ path('app_project_db_show', {'id': project_db.id}) }}" class="btn btn-secondary">View Details</a>
                             {% if is_granted('ROLE_FREELANCER') %}
                                 <a href="{{ path('app_commande_db_new', {'project_id': project_db.id}) }}" class="btn btn-success">Apply</a>
                             {% endif %}
                         </div>
-
                     </div>
                 </div>
             {% endfor %}
@@ -84,12 +85,10 @@
         </div>
 
         <!-- Create New Project Button -->
-        <!-- Create New Project Button -->
         {% if is_granted('ROLE_CLIENT') %}
             <div class="mt-4 text-center">
                 <a href="{{ path('app_project_db_new') }}" class="btn btn-success btn-lg">Create New Project</a>
             </div>
         {% endif %}
-
     </div>
 {% endblock %}
