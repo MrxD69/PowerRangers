@@ -1,0 +1,155 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User Management{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <h1 class="h3 mb-4 text-gray-800">User Management</h1>
+
+        {# Flash Messages #}
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        {# Create User Form #}
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Create New User</h6>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <input type="hidden" name="action" value="create">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <input type="email" name="email" class="form-control" placeholder="Email" required>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" name="nom" class="form-control" placeholder="Nom" required>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" name="prenom" class="form-control" placeholder="Prenom" required>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="password" name="password" class="form-control" placeholder="Password" required>
+                        </div>
+                        <div class="col-md-2">
+                            <select name="role" class="form-control" required>
+                                {% for label, role in roles %}
+                                    <option value="{{ role.value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-success btn-block">Create User</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {# Users Table #}
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Users List</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="usersTable">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Email</th>
+                            <th>Nom</th>
+                            <th>Prenom</th>
+                            <th>Role</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for user in users %}
+                            <tr id="user-row-{{ user.id }}">
+                                <td>{{ user.id }}</td>
+                                <td>
+                                    <span class="view-mode">{{ user.email }}</span>
+                                    <input type="email" class="form-control edit-mode d-none" value="{{ user.email }}">
+                                </td>
+                                <td>
+                                    <span class="view-mode">{{ user.nom }}</span>
+                                    <input type="text" class="form-control edit-mode d-none" value="{{ user.nom }}">
+                                </td>
+                                <td>
+                                    <span class="view-mode">{{ user.prenom }}</span>
+                                    <input type="text" class="form-control edit-mode d-none" value="{{ user.prenom }}">
+                                </td>
+                                <td>
+                                    <span class="view-mode">{{ user.role.value }}</span>
+                                    <select class="form-control edit-mode d-none">
+                                        {% for label, role in roles %}
+                                            <option value="{{ role.value }}" {{ user.role.value == role.value ? 'selected' : '' }}>
+                                                {{ label }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <div class="btn-group view-mode">
+                                        <button class="btn btn-warning btn-sm edit-btn" onclick="toggleEditMode({{ user.id }})">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <form method="POST" class="d-inline" onsubmit="return confirm('Are you sure?')">
+                                            <input type="hidden" name="action" value="delete">
+                                            <input type="hidden" name="id" value="{{ user.id }}">
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div class="btn-group edit-mode d-none">
+                                        <button class="btn btn-success btn-sm" onclick="saveUser({{ user.id }})">
+                                            <i class="fas fa-save"></i>
+                                        </button>
+                                        <button class="btn btn-secondary btn-sm" onclick="toggleEditMode({{ user.id }})">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% block javascripts %}
+        <script>
+            function toggleEditMode(userId) {
+                const row = document.getElementById(`user-row-${userId}`);
+                row.querySelectorAll('.view-mode').forEach(el => el.classList.toggle('d-none'));
+                row.querySelectorAll('.edit-mode').forEach(el => el.classList.toggle('d-none'));
+            }
+
+            function saveUser(userId) {
+                const row = document.getElementById(`user-row-${userId}`);
+                const form = new FormData();
+
+                form.append('action', 'update');
+                form.append('id', userId);
+                form.append('email', row.querySelector('input[type="email"]').value);
+                form.append('nom', row.querySelectorAll('input[type="text"]')[0].value);
+                form.append('prenom', row.querySelectorAll('input[type="text"]')[1].value);
+                form.append('role', row.querySelector('select').value);
+
+                fetch(window.location.href, {
+                    method: 'POST',
+                    body: form
+                }).then(() => window.location.reload());
+            }
+        </script>
+    {% endblock %}
+{% endblock %}

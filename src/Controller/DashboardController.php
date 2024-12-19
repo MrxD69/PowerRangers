@@ -9,8 +9,10 @@ use App\Enum\UserRole;
 use App\Repository\EvenementRepository;
 use App\Repository\ProjectDbRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
@@ -157,6 +159,76 @@ class DashboardController extends AbstractController
             'reclamations' => $reclamations,
             'reponses' => $reponses,
             'evenements' => $evenements,
+        ]);
+    }
+    private UserPasswordHasherInterface $passwordHasher;
+
+    public function __construct(UserPasswordHasherInterface $passwordHasher)
+    {
+        $this->passwordHasher = $passwordHasher;
+    }
+
+    #[Route('/dashboard/users', name: 'admin_users')]
+    public function manageUsers(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        // Handle form submissions
+        if ($request->isMethod('POST')) {
+            $action = $request->request->get('action');
+
+            switch ($action) {
+                case 'create':
+                    $user = new User();
+                    $user->setEmail($request->request->get('email'));
+                    $user->setNom($request->request->get('nom'));
+                    $user->setPrenom($request->request->get('prenom'));
+                    $user->setPassword($this->passwordHasher->hashPassword($user, $request->request->get('password')));
+                    $user->setRole(UserRole::from($request->request->get('role')));
+
+                    $entityManager->persist($user);
+                    $entityManager->flush();
+                    $this->addFlash('success', 'User created successfully');
+                    break;
+
+                case 'update':
+                    $user = $entityManager->getRepository(User::class)->find($request->request->get('id'));
+                    if ($user) {
+                        $user->setEmail($request->request->get('email'));
+                        $user->setNom($request->request->get('nom'));
+                        $user->setPrenom($request->request->get('prenom'));
+                        $user->setRole(UserRole::from($request->request->get('role')));
+
+                        if ($password = $request->request->get('password')) {
+                            $user->setPassword($this->passwordHasher->hashPassword($user, $password));
+                        }
+
+                        $entityManager->flush();
+                        $this->addFlash('success', 'User updated successfully');
+                    }
+                    break;
+
+                case 'delete':
+                    $user = $entityManager->getRepository(User::class)->find($request->request->get('id'));
+                    if ($user) {
+                        $entityManager->remove($user);
+                        $entityManager->flush();
+                        $this->addFlash('success', 'User deleted successfully');
+                    }
+                    break;
+            }
+
+            return $this->redirectToRoute('admin_users');
+        }
+
+        // Fetch all users
+        $users = $entityManager->getRepository(User::class)->findAll();
+
+        return $this->render('admin/users.html.twig', [
+            'users' => $users,
+            'roles' => [
+                'ROLE_ADMIN' => UserRole::ROLE_ADMIN,
+                'ROLE_CLIENT' => UserRole::ROLE_CLIENT,
+                'ROLE_FREELANCER' => UserRole::ROLE_FREELANCER,
+            ]
         ]);
     }
 }

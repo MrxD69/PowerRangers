@@ -34,6 +34,9 @@
 
         <div class="sidebar-heading">Addons</div>
         <li class="nav-item">
+            <a href="{{ path('admin_users') }}" class="btn btn-outline-light">
+                Users
+            </a>
             <a href="{{ path('app_evenement_index') }}" class="btn btn-outline-light">
                 Total Evenements <span class="badge badge-light ml-2">{{ evenements|length }}</span>
             </a>
@@ -43,6 +46,7 @@
             <a href="{{ path('app_reponse_index') }}" class="btn btn-outline-light">
                 Total Reponses <span class="badge badge-light ml-2">{{ reponses|length }}</span>
             </a>
+
         </li>
         <hr class="sidebar-divider d-none d-md-block">
         <div class="text-center d-none d-md-inline">
