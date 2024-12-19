@@ -79,6 +79,7 @@ final class ProjectDbController extends AbstractController
         // Return the results as JSON
         return new JsonResponse($data);
     }
+
     #[Route('/new', name: 'app_project_db_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -163,4 +164,34 @@ final class ProjectDbController extends AbstractController
         return $this->redirectToRoute('app_project_db_index');
     }
 
+    #[Route('/project/{id}/reclamation/new', name: 'app_reclamation_new', methods: ['GET', 'POST'])]
+    public function newReclamation(Request $request, ProjectDb $projectDb, EntityManagerInterface $entityManager): Response
+    {
+        $user = $this->getUser();
+
+        if (!$user || $user->getRole() !== UserRole::ROLE_FREELANCER) {
+            $this->addFlash('error', 'Only freelancers can create reclamations.');
+            return $this->redirectToRoute('app_project_db_show', ['id' => $projectDb->getId()]);
+        }
+
+        $reclamation = new Reclamation();
+        if ($request->isMethod('POST')) {
+            $message = $request->request->get('message');
+            $reclamation->setMessage($message);
+            $reclamation->setProjectDb($projectDb);
+            $reclamation->setIdClient($projectDb->getClient());
+            $reclamation->setDate(new \DateTime());
+            $reclamation->setEtat('pending');
+
+            $entityManager->persist($reclamation);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Reclamation created successfully!');
+            return $this->redirectToRoute('app_project_db_show', ['id' => $projectDb->getId()]);
+        }
+
+        return $this->render('reclamation/new.html.twig', [
+            'project' => $projectDb,
+        ]);
+    }
 }

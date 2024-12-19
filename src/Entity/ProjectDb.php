@@ -6,6 +6,8 @@ use App\Repository\ProjectDbRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: ProjectDbRepository::class)]
 class ProjectDb
@@ -35,6 +37,16 @@ class ProjectDb
     #[ORM\ManyToOne(targetEntity: "App\Entity\User", inversedBy: "projects")]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $client = null;
+
+    #[ORM\OneToMany(mappedBy: "projectDb", targetEntity: Reclamation::class)]
+    private Collection $reclamations;
+
+    public function __construct()
+    {
+        $this->reclamations = new ArrayCollection();
+    }
+
+    // Getters and Setters for all properties...
 
     public function getId(): ?int
     {
@@ -71,6 +83,28 @@ class ProjectDb
     public function setClient(?User $client): self
     {
         $this->client = $client;
+        return $this;
+    }
+
+    public function getReclamations(): Collection
+    {
+        return $this->reclamations;
+    }
+
+    public function addReclamation(Reclamation $reclamation): self
+    {
+        if (!$this->reclamations->contains($reclamation)) {
+            $this->reclamations->add($reclamation);
+            $reclamation->setProjectDb($this);
+        }
+        return $this;
+    }
+
+    public function removeReclamation(Reclamation $reclamation): self
+    {
+        if ($this->reclamations->removeElement($reclamation) && $reclamation->getProjectDb() === $this) {
+            $reclamation->setProjectDb(null);
+        }
         return $this;
     }
 }

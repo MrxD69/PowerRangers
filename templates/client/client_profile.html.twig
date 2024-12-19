@@ -1,3 +1,5 @@
+{% extends 'base.html.twig' %}
+
 {% block stylesheets %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -68,6 +70,27 @@
                                     <a class="btn btn-info" href="{{ path('client_edit_profile') }}">Edit Profile</a>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Reclamations Section -->
+                    <div class="card mt-3">
+                        <div class="card-header bg-warning text-white">Reclamations Against Your Projects</div>
+                        <div class="card-body">
+                            {% if reclamations|length > 0 %}
+                                <ul class="list-group">
+                                    {% for reclamation in reclamations %}
+                                        <li class="list-group-item">
+                                            <strong>ID:</strong> {{ reclamation.id }}<br>
+                                            <strong>Message:</strong> {{ reclamation.message }}<br>
+                                            <strong>Filed by:</strong> {{ reclamation.freelancer.nom }} {{ reclamation.freelancer.prenom }}<br>
+                                            <strong>Project:</strong> {{ reclamation.projectDb.domaine }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-muted">No reclamations found for your projects.</p>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

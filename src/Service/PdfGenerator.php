@@ -6,16 +6,19 @@ use Dompdf\Options;
 
 class PdfGenerator
 {
-public function generatePdf(string $html): string
-{
-$options = new Options();
-$options->set('defaultFont', 'Arial');
+    public function generatePdf(string $html): string
+    {
+        // Ensure the HTML content is encoded in UTF-8
+        $html = mb_convert_encoding($html, 'UTF-8', 'HTML-ENTITIES');
 
-$dompdf = new Dompdf($options);
-$dompdf->loadHtml($html);
-$dompdf->setPaper('A4', 'portrait');
-$dompdf->render();
+        $options = new Options();
+        $options->set('defaultFont', 'Arial');
 
-return $dompdf->output();
-}
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        return $dompdf->output();
+    }
 }

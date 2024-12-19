@@ -40,7 +40,6 @@
                                 <td>{{ reclamation.Date ? reclamation.Date|date('Y-m-d') : '' }}</td>
                                 <td>{{ reclamation.Etat }}</td>
                                 <td data-id="{{ reclamation.id }}">{{ reclamation.Message }}</td>
-                                <td>{{ reclamation.projectDb.domaine }}</td>
                                 <td>
 
                                     <form action="{{ path('app_reponse_new', {'lid': reclamation.id}) }}" method="post" style="display: inline-block; margin-right: 10px;">
@@ -48,7 +47,7 @@
                                     </form>
 
 
-                                    <form action="{{ path('app_reclamation_deletee', {'id': reclamation.id}) }}" method="post" onsubmit="return confirm('Are you sure you want to delete this item?')" style="display: inline;">
+                                    <form action="{{ path('app_reclamation_delete', {'id': reclamation.id}) }}" method="post" onsubmit="return confirm('Are you sure you want to delete this item?')" style="display: inline;">
                                         <input type="hidden" name="_method" value="DELETE">
                                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reclamation.id) }}">
                                         <button {{ reclamation.Etat == 'non traité' ? '' : 'disabled' }} type="submit" class="btn btn-sm btn-primary" style="width: 100px; background-color: maroon;">Supprimer</button>

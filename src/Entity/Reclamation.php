@@ -34,11 +34,14 @@ class Reclamation
     )]
     private ?string $message = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: ProjectDb::class, inversedBy: "reclamations")]
     private ?ProjectDb $projectDb = null;
 
-    #[ORM\ManyToOne]
-    private ?User $idClient = null;
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "reclamationsFiled")]
+    private ?User $freelancer = null;
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "reclamationsReceived")]
+    private ?User $client = null;
 
     // Getters and Setters
 
@@ -55,7 +58,6 @@ class Reclamation
     public function setDate(\DateTimeInterface $date): static
     {
         $this->date = $date;
-
         return $this;
     }
 
@@ -67,7 +69,6 @@ class Reclamation
     public function setEtat(string $etat): static
     {
         $this->etat = $etat;
-
         return $this;
     }
 
@@ -83,7 +84,6 @@ class Reclamation
         }
 
         $this->reponse = $reponse;
-
         return $this;
     }
 
@@ -95,7 +95,6 @@ class Reclamation
     public function setMessage(string $message): static
     {
         $this->message = $message;
-
         return $this;
     }
 
@@ -107,19 +106,28 @@ class Reclamation
     public function setProjectDb(?ProjectDb $projectDb): static
     {
         $this->projectDb = $projectDb;
-
         return $this;
     }
 
-    public function getIdClient(): ?User
+    public function getFreelancer(): ?User
     {
-        return $this->idClient;
+        return $this->freelancer;
     }
 
-    public function setIdClient(?User $idClient): static
+    public function setFreelancer(?User $freelancer): static
     {
-        $this->idClient = $idClient;
+        $this->freelancer = $freelancer;
+        return $this;
+    }
 
+    public function getClient(): ?User
+    {
+        return $this->client;
+    }
+
+    public function setClient(?User $client): static
+    {
+        $this->client = $client;
         return $this;
     }
 }

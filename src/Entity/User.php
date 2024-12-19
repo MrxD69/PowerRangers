@@ -61,10 +61,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: "client", targetEntity: ProjectDb::class, cascade: ["persist", "remove"])]
     private Collection $projects;
 
-    public function __construct()
-    {
-        $this->projects = new ArrayCollection();
-    }
+    #[ORM\OneToMany(mappedBy: "idClient", targetEntity: Reclamation::class)]
+    private Collection $reclamations;
 
     // Social Links
     #[ORM\Column(type: "string", length: 255, nullable: true)]
@@ -86,6 +84,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: "string", length: 255, nullable: true)]
     #[Assert\Url]
     private ?string $github = null;
+
+    public function __construct()
+    {
+        $this->projects = new ArrayCollection();
+        $this->reclamations = new ArrayCollection();
+    }
 
     // Getters and Setters for Social Links
     public function getTwitter(): ?string
@@ -288,6 +292,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->projects->removeElement($project) && $project->getClient() === $this) {
             $project->setClient(null);
+        }
+        return $this;
+    }
+
+    public function getReclamations(): Collection
+    {
+        return $this->reclamations;
+    }
+
+    public function addReclamation(Reclamation $reclamation): self
+    {
+        if (!$this->reclamations->contains($reclamation)) {
+            $this->reclamations->add($reclamation);
+            $reclamation->setIdClient($this);
+        }
+        return $this;
+    }
+
+    public function removeReclamation(Reclamation $reclamation): self
+    {
+        if ($this->reclamations->removeElement($reclamation) && $reclamation->getIdClient() === $this) {
+            $reclamation->setIdClient(null);
         }
         return $this;
     }

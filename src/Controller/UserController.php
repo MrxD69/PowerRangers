@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\Reclamation;
 use App\Enum\UserRole;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -130,8 +131,18 @@ class UserController extends AbstractController
             throw $this->createNotFoundException('Client profile not found.');
         }
 
+        // Retrieve reclamations made against the client by freelancers
+        $reclamations = $this->entityManager->getRepository(Reclamation::class)
+            ->createQueryBuilder('r')
+            ->join('r.projectDb', 'p')
+            ->where('p.client = :client')
+            ->setParameter('client', $user)
+            ->getQuery()
+            ->getResult();
+
         return $this->render('client/client_profile.html.twig', [
             'user' => $user,
+            'reclamations' => $reclamations,
         ]);
     }
 
@@ -208,5 +219,4 @@ class UserController extends AbstractController
             'user' => $user,
         ]);
     }
-
 }

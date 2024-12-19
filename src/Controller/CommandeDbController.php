@@ -5,18 +5,13 @@ namespace App\Controller;
 use App\Entity\CommandeDb;
 use App\Form\CommandeDbType;
 use App\Repository\CommandeDbRepository;
-use App\Repository\ProjectDbRepository;
+use App\Service\PdfGenerator;
 use Doctrine\ORM\EntityManagerInterface;
-use Dompdf\Dompdf;
-use Dompdf\Options;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
-
-use App\Form\SearchCommandeDbType;
-
+use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/commande/db')]
 final class CommandeDbController extends AbstractController {
@@ -94,35 +89,28 @@ final class CommandeDbController extends AbstractController {
     #[Route('/{id}', name: 'app_commande_db_delete', methods: ['POST'])]
     public function delete(Request $request, CommandeDb $commandeDb, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$commandeDb->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete'.$commandeDb->getId(), $request->request->get('_token'))) {
             $entityManager->remove($commandeDb);
             $entityManager->flush();
         }
 
         return $this->redirectToRoute('app_commande_db_index', [], Response::HTTP_SEE_OTHER);
     }
-    #[Route('/{id}/pdf', name: 'app_commande_db_pdf', methods: ['GET'])]
-    public function generatePdf(CommandeDb $commandeDb): Response
-    {
-        // Initialize DomPDF
-        $options = new Options();
-        $options->set('isHtml5ParserEnabled', true);
-        $options->set('isPhpEnabled', true); // Allow PHP inside HTML (if needed)
-        $dompdf = new Dompdf($options);
 
+    #[Route('/{id}/pdf', name: 'app_commande_db_pdf', methods: ['GET'])]
+    public function generatePdf(CommandeDb $commandeDb, PdfGenerator $pdfGenerator): Response
+    {
         // Create the HTML content
         $html = $this->renderView('commande_db/pdf_template.html.twig', [
             'commande_db' => $commandeDb,
         ]);
 
-        // Load the HTML to DomPDF
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
-        $dompdf->render();
+        // Generate the PDF
+        $pdfContent = $pdfGenerator->generatePdf($html);
 
         // Output PDF to browser
         return new Response(
-            $dompdf->output(),
+            $pdfContent,
             Response::HTTP_OK,
             [
                 'Content-Type' => 'application/pdf',

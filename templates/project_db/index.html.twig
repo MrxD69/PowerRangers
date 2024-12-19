@@ -74,8 +74,8 @@
                             </div>
                             <a href="{{ path('app_project_db_show', {'id': project_db.id}) }}" class="btn btn-secondary">View Details</a>
                             {% if is_granted('ROLE_FREELANCER') or is_granted('ROLE_ADMIN') %}
-                                <a href="{{ path('app_commande_db_new', {'project_id': project_db.id}) }}" class="btn btn-success">Apply</a>
-                                <a href="{{ path('app_reclamation_new', {'project_id': project_db.id}) }}" class="btn btn-danger">Create Reclamation</a>
+                                <a href="{{ path('app_commande_db_new', {'projectId': project_db.id}) }}" class="btn btn-success">Apply</a>
+                                <a href="{{ path('app_reclamation_new', {'projectId': project_db.id}) }}" class="btn btn-danger">Create Reclamation</a>
                             {% endif %}
                         </div>
 
@@ -84,13 +84,11 @@
             {% endfor %}
         </div>
 
-
         <!-- Pagination for Card Layout -->
         <div class="d-flex justify-content-center mt-4">
             {{ knp_pagination_render(project_dbs) }}
         </div>
 
-        <!-- Create New Project Button -->
         <!-- Create New Project Button -->
         {% if is_granted('ROLE_CLIENT') or is_granted('ROLE_ADMIN') %}
             <div class="mt-4 text-center">
