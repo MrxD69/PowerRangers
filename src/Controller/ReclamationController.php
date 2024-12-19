@@ -154,7 +154,7 @@ final class ReclamationController extends AbstractController
             $this->entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_reclamation_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_reclamationc', [], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/delete/multiple', name: 'app_reclamation_delete_multiple', methods: ['POST'])]

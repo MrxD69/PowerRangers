@@ -42,7 +42,7 @@ final class ReponseController extends AbstractController
         $pagination = $paginator->paginate(
             $reclamations,
             $request->query->getInt('page', 1),
-            2
+            5
         );
 
         return $this->render('reponse/indexRl.html.twig', [
