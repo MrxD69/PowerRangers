@@ -43,7 +43,14 @@ final class CommandeDbController extends AbstractController {
     #[Route('/new', name: 'app_commande_db_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
+        $user = $this->getUser();
+        if (!$user || !$this->isGranted('ROLE_FREELANCER')) {
+            throw $this->createAccessDeniedException('Only freelancers can create offers.');
+        }
+
         $commandeDb = new CommandeDb();
+        $commandeDb->setFreelancer($user); // Set the freelancer
+
         $form = $this->createForm(CommandeDbType::class, $commandeDb);
         $form->handleRequest($request);
 
@@ -56,9 +63,10 @@ final class CommandeDbController extends AbstractController {
 
         return $this->render('commande_db/new.html.twig', [
             'commande_db' => $commandeDb,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
+
 
     #[Route('/{id}', name: 'app_commande_db_show', methods: ['GET'])]
     public function show(CommandeDb $commandeDb): Response

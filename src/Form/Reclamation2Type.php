@@ -15,14 +15,13 @@ class Reclamation2Type extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('message', TextareaType::class, [ // Changed 'Message' to 'message' to match entity property
-                'label' => 'Votre message',
+            ->add('message', TextareaType::class, [
+                'label' => 'Your Message',
                 'attr' => [
-                    'placeholder' => 'Entrez votre message ici...',
+                    'placeholder' => 'Enter your message here...',
                     'rows' => 5,
                 ],
-            ])
-            ;
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

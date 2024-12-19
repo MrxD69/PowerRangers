@@ -4,12 +4,12 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Entity\Reclamation;
-use App\Enum\UserRole;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Enum\UserRole;
 
 class UserController extends AbstractController
 {
@@ -20,9 +20,7 @@ class UserController extends AbstractController
         $this->entityManager = $entityManager;
     }
 
-    /**
-     * Public Freelancer Profile - Accessible to Everyone
-     */
+    // Freelancer Public Profile
     #[Route('/freelancer/{id}/public-profile', name: 'get_freelancer_public_profile', methods: ['GET'])]
     public function getFreelancerPublicProfile(int $id): Response
     {
@@ -32,18 +30,20 @@ class UserController extends AbstractController
             throw $this->createNotFoundException('Freelancer profile not found.');
         }
 
-        // Ensure a default profile picture if none exists
-        $profilePicture = $user->getProfilePicture() ?: 'public/uploads/profile_pictures/khalil.jpg';
+        $reclamationsFiled = $this->entityManager->getRepository(Reclamation::class)
+            ->findBy(['complainant' => $user]);
+
+        $reclamationsAgainst = $this->entityManager->getRepository(Reclamation::class)
+            ->findBy(['againstUser' => $user]);
 
         return $this->render('freelancer/public_profile.html.twig', [
             'user' => $user,
-            'profile_picture' => $profilePicture,
+            'reclamationsFiled' => $reclamationsFiled,
+            'reclamationsAgainst' => $reclamationsAgainst,
         ]);
     }
 
-    /**
-     * Private Freelancer Profile - For Authenticated Freelancer Only
-     */
+    // Freelancer Private Profile
     #[Route('/freelancer/profile', name: 'get_freelancer_private_profile', methods: ['GET'])]
     public function getFreelancerPrivateProfile(): Response
     {
@@ -53,14 +53,20 @@ class UserController extends AbstractController
             throw $this->createAccessDeniedException('Access denied.');
         }
 
+        $reclamationsFiled = $this->entityManager->getRepository(Reclamation::class)
+            ->findBy(['complainant' => $user]);
+
+        $reclamationsAgainst = $this->entityManager->getRepository(Reclamation::class)
+            ->findBy(['againstUser' => $user]);
+
         return $this->render('freelancer/freelancer_profile.html.twig', [
             'user' => $user,
+            'reclamationsFiled' => $reclamationsFiled,
+            'reclamationsAgainst' => $reclamationsAgainst,
         ]);
     }
 
-    /**
-     * Edit Freelancer Profile - Restricted to Authenticated Freelancer
-     */
+    // Edit Freelancer Profile
     #[Route('/freelancer/profile/edit', name: 'freelancer_edit_profile', methods: ['GET', 'POST'])]
     public function editFreelancerProfile(Request $request): Response
     {
@@ -74,7 +80,7 @@ class UserController extends AbstractController
         if ($request->isMethod('POST')) {
             $biography = $request->request->get('biography');
             $location = $request->request->get('location');
-            $skills = $request->request->all('skills');
+            $skills = $request->request->all('skills'); // Fetch array of skills
             $phone = $request->request->get('phone');
             $twitter = $request->request->get('twitter');
             $facebook = $request->request->get('facebook');
@@ -96,10 +102,10 @@ class UserController extends AbstractController
                 }
             }
 
-            // Update user entity
+            // Save the updated user data
             $user->setBiography($biography);
             $user->setLocation($location);
-            $user->setSkills($skills);
+            $user->setSkills(array_values($skills)); // Ensure it's a numeric array
             $user->setPhone($phone);
             $user->setTwitter($twitter);
             $user->setFacebook($facebook);
@@ -119,9 +125,8 @@ class UserController extends AbstractController
         ]);
     }
 
-    /**
-     * Public Client Profile - Accessible to Everyone
-     */
+
+    // Client Profile
     #[Route('/client/{id}/profile', name: 'get_client_profile', methods: ['GET'])]
     public function getClientProfile(int $id): Response
     {
@@ -131,37 +136,58 @@ class UserController extends AbstractController
             throw $this->createNotFoundException('Client profile not found.');
         }
 
-        // Retrieve reclamations made against the client by freelancers
-        $reclamations = $this->entityManager->getRepository(Reclamation::class)
-            ->createQueryBuilder('r')
-            ->join('r.projectDb', 'p')
-            ->where('p.client = :client')
-            ->setParameter('client', $user)
-            ->getQuery()
-            ->getResult();
+        $reclamationsFiled = $this->entityManager->getRepository(Reclamation::class)
+            ->findBy(['complainant' => $user]);
+
+        $reclamationsAgainst = $this->entityManager->getRepository(Reclamation::class)
+            ->findBy(['againstUser' => $user]);
 
         return $this->render('client/client_profile.html.twig', [
             'user' => $user,
-            'reclamations' => $reclamations,
+            'reclamationsFiled' => $reclamationsFiled,
+            'reclamationsAgainst' => $reclamationsAgainst,
         ]);
     }
 
-    /**
-     * Edit Client Profile - Restricted to Authenticated Client
-     */
+    // Client Private Profile
+    #[Route('/client/profile', name: 'get_client_private_profile', methods: ['GET'])]
+    public function getClientPrivateProfile(): Response
+    {
+        $user = $this->getUser();
+
+        if (!$user || $user->getRole() !== UserRole::ROLE_CLIENT) {
+            throw $this->createAccessDeniedException('Access denied.');
+        }
+
+        // Fetch reclamations filed by the client
+        $reclamationsFiled = $this->entityManager->getRepository(Reclamation::class)
+            ->findBy(['complainant' => $user]);
+
+        // Fetch reclamations against the client
+        $reclamationsAgainst = $this->entityManager->getRepository(Reclamation::class)
+            ->findBy(['againstUser' => $user]);
+
+        return $this->render('client/client_profile.html.twig', [
+            'user' => $user,
+            'reclamationsFiled' => $reclamationsFiled,
+            'reclamationsAgainst' => $reclamationsAgainst,
+        ]);
+    }
     #[Route('/client/profile/edit', name: 'client_edit_profile', methods: ['GET', 'POST'])]
     public function editClientProfile(Request $request): Response
     {
         $user = $this->getUser();
 
         if (!$user || $user->getRole() !== UserRole::ROLE_CLIENT) {
-            $this->addFlash('error', 'Access denied.');
-            return $this->redirectToRoute('home_index');
+            throw $this->createAccessDeniedException('Access denied.');
         }
 
         if ($request->isMethod('POST')) {
-            $location = $request->request->get('location');
+            $nom = $request->request->get('nom');
+            $prenom = $request->request->get('prenom');
+            $email = $request->request->get('email');
             $phone = $request->request->get('phone');
+            $location = $request->request->get('location');
 
             // Handle profile picture upload
             $uploadedFile = $request->files->get('profilePicture');
@@ -177,14 +203,18 @@ class UserController extends AbstractController
                 }
             }
 
-            $user->setLocation($location);
+            // Save the updated user data
+            $user->setNom($nom);
+            $user->setPrenom($prenom);
+            $user->setEmail($email);
             $user->setPhone($phone);
+            $user->setLocation($location);
 
             $this->entityManager->persist($user);
             $this->entityManager->flush();
 
             $this->addFlash('success', 'Profile updated successfully.');
-            return $this->redirectToRoute('get_client_profile', ['id' => $user->getId()]);
+            return $this->redirectToRoute('get_client_private_profile');
         }
 
         return $this->render('client/edit_client_profile.html.twig', [
@@ -192,6 +222,8 @@ class UserController extends AbstractController
         ]);
     }
 
+
+    // Admin Profile
     #[Route('/admin/{id}/profile', name: 'get_admin_profile', methods: ['GET'])]
     public function getAdminProfile(int $id): Response
     {
@@ -206,6 +238,7 @@ class UserController extends AbstractController
         ]);
     }
 
+    // Admin Private Profile
     #[Route('/admin/profile', name: 'get_admin_private_profile', methods: ['GET'])]
     public function getAdminPrivateProfile(): Response
     {

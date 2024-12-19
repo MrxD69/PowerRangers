@@ -37,11 +37,16 @@ class Reclamation
     #[ORM\ManyToOne(targetEntity: ProjectDb::class, inversedBy: "reclamations")]
     private ?ProjectDb $projectDb = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "reclamationsFiled")]
-    private ?User $freelancer = null;
+    #[ORM\ManyToOne(targetEntity: CommandeDb::class)]
+    private ?CommandeDb $commandeDb = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "reclamationsReceived")]
-    private ?User $client = null;
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $complainant = null;
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $againstUser = null;
 
     // Getters and Setters
 
@@ -109,25 +114,36 @@ class Reclamation
         return $this;
     }
 
-    public function getFreelancer(): ?User
+    public function getCommandeDb(): ?CommandeDb
     {
-        return $this->freelancer;
+        return $this->commandeDb;
     }
 
-    public function setFreelancer(?User $freelancer): static
+    public function setCommandeDb(?CommandeDb $commandeDb): self
     {
-        $this->freelancer = $freelancer;
+        $this->commandeDb = $commandeDb;
         return $this;
     }
 
-    public function getClient(): ?User
+    public function getComplainant(): ?User
     {
-        return $this->client;
+        return $this->complainant;
     }
 
-    public function setClient(?User $client): static
+    public function setComplainant(User $complainant): self
     {
-        $this->client = $client;
+        $this->complainant = $complainant;
+        return $this;
+    }
+
+    public function getAgainstUser(): ?User
+    {
+        return $this->againstUser;
+    }
+
+    public function setAgainstUser(User $againstUser): self
+    {
+        $this->againstUser = $againstUser;
         return $this;
     }
 }

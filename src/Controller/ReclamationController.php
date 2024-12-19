@@ -1,10 +1,9 @@
 <?php
-// src/Controller/ReclamationController.php
 
 namespace App\Controller;
 
 use App\Entity\Reclamation;
-use App\Entity\ProjectDb; // Correct namespace
+use App\Entity\CommandeDb;
 use App\Form\Reclamation2Type;
 use App\Repository\ReclamationRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -12,11 +11,19 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Enum\UserRole;
+use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
+use Symfony\UX\Chartjs\Model\Chart;
 
 #[Route('/reclamation')]
 final class ReclamationController extends AbstractController
 {
+    private EntityManagerInterface $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
     private function filterBadWords(string $text): string
     {
         $badWords = ["bad1", "bad2", "bad3", "bad4", "bad5"];
@@ -24,44 +31,50 @@ final class ReclamationController extends AbstractController
             $pattern = "/\b" . preg_quote($word, '/') . "\b/i";
             $text = preg_replace($pattern, "****", $text);
         }
-
         return $text;
     }
 
-    #[Route('/new/{projectId}', name: 'app_reclamation_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager, int $projectId): Response
+    #[Route('/new/commande/{commandeId}', name: 'app_reclamation_new_commande', methods: ['GET', 'POST'])]
+    public function newFromClient(Request $request, int $commandeId): Response
     {
         $user = $this->getUser();
 
-        if (!$user || $user->getRole() !== UserRole::ROLE_FREELANCER) {
-            throw $this->createAccessDeniedException('Access denied.');
+        if (!$user || !$this->isGranted('ROLE_CLIENT')) {
+            throw $this->createAccessDeniedException('Only clients can file reclamations against offers.');
         }
 
-        $project = $entityManager->getRepository(ProjectDb::class)->find($projectId);
-        if (!$project) {
-            throw $this->createNotFoundException('Project not found.');
+        $commande = $this->entityManager->getRepository(CommandeDb::class)->find($commandeId);
+        if (!$commande) {
+            throw $this->createNotFoundException('Offer not found.');
+        }
+
+        $freelancer = $commande->getFreelancer();
+        if (!$freelancer) {
+            throw $this->createNotFoundException('Freelancer not associated with this offer.');
         }
 
         $reclamation = new Reclamation();
-        $reclamation->setEtat("non traité");
-        $reclamation->setDate(new \DateTime('today'));
-        $reclamation->setFreelancer($user);
-        $reclamation->setClient($project->getClient());
-        $reclamation->setProjectDb($project);
+        $reclamation->setEtat('non traité');
+        $reclamation->setDate(new \DateTime());
+        $reclamation->setComplainant($user); // Client files the complaint
+        $reclamation->setAgainstUser($freelancer); // The freelancer is the target
+        $reclamation->setCommandeDb($commande);
 
         $form = $this->createForm(Reclamation2Type::class, $reclamation);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($reclamation);
-            $entityManager->flush();
+            $filteredMessage = $this->filterBadWords($reclamation->getMessage());
+            $reclamation->setMessage($filteredMessage);
+            $this->entityManager->persist($reclamation);
+            $this->entityManager->flush();
 
-            return $this->redirectToRoute('app_project_db_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_commande_db_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('reclamation/new.html.twig', [
             'reclamation' => $reclamation,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
 
@@ -82,36 +95,36 @@ final class ReclamationController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_reclamation_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Reclamation $reclamation, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Reclamation $reclamation): Response
     {
         $form = $this->createForm(Reclamation2Type::class, $reclamation);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+            $this->entityManager->flush();
 
             return $this->redirectToRoute('app_reclamation_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('reclamation/edit.html.twig', [
             'reclamation' => $reclamation,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
 
     #[Route('/{id}', name: 'app_reclamation_delete', methods: ['POST'])]
-    public function delete(Request $request, Reclamation $reclamation, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, Reclamation $reclamation): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$reclamation->getId(), $request->get('_token'))) {
-            $entityManager->remove($reclamation);
-            $entityManager->flush();
+        if ($this->isCsrfTokenValid('delete' . $reclamation->getId(), $request->request->get('_token'))) {
+            $this->entityManager->remove($reclamation);
+            $this->entityManager->flush();
         }
 
         return $this->redirectToRoute('app_reclamation_index', [], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/delete/multiple', name: 'app_reclamation_delete_multiple', methods: ['POST'])]
-    public function deleteMultiple(Request $request, EntityManagerInterface $entityManager): Response
+    public function deleteMultiple(Request $request): Response
     {
         $selectedIds = $request->request->all('selectedIds');
 
@@ -122,13 +135,13 @@ final class ReclamationController extends AbstractController
         $selectedIds = array_filter($selectedIds, 'is_scalar');
 
         foreach ($selectedIds as $id) {
-            $reclamation = $entityManager->getRepository(Reclamation::class)->find($id);
+            $reclamation = $this->entityManager->getRepository(Reclamation::class)->find($id);
             if ($reclamation) {
-                $entityManager->remove($reclamation);
+                $this->entityManager->remove($reclamation);
             }
         }
 
-        $entityManager->flush();
+        $this->entityManager->flush();
 
         return $this->redirectToRoute('app_reclamation_index', [], Response::HTTP_SEE_OTHER);
     }

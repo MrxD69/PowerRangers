@@ -6,12 +6,46 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/freelancer_profile.css') }}">
+    <style>
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .skill-item {
+            background: #f9f9f9;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            max-width: 200px;
+            text-align: center;
+        }
+
+        .progress-container {
+            margin-top: 10px;
+            height: 8px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #007bff;
+            transition: width 0.6s ease;
+            border-radius: 5px;
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
     <div class="container">
         <div class="main-body">
             <div class="row gutters-sm">
+                <!-- Left Column -->
                 <div class="col-md-4 mb-3">
                     <div class="card">
                         <div class="card-body text-center">
@@ -36,7 +70,9 @@
                     </div>
                 </div>
 
+                <!-- Right Column -->
                 <div class="col-md-8">
+                    <!-- Profile Details -->
                     <div class="card mb-3">
                         <div class="card-body">
                             <div class="row">
@@ -92,21 +128,72 @@
                         </div>
                     </div>
 
-                    <div class="card h-100">
+                    <!-- Skills Section -->
+                    <div class="card h-100 mt-3">
                         <div class="card-body">
                             <h6 class="d-flex align-items-center mb-3">Skills and Progress</h6>
-                            {% for skill in user.skills %}
-                                <small>{{ skill.name|capitalize }}</small>
-                                <div class="progress mb-3" style="height: 5px;">
-                                    <div class="progress-bar bg-primary" role="progressbar"
-                                         style="width: {{ skill.progress }}%"
-                                         aria-valuenow="{{ skill.progress }}"
-                                         aria-valuemin="0"
-                                         aria-valuemax="100"></div>
-                                </div>
+                            <div class="skills-container">
+                                {% for skill in user.skills %}
+                                    <div class="skill-item">
+                                        <strong>{{ skill.name|capitalize }}</strong>
+                                        <div class="progress-container mt-2">
+                                            <div class="progress-bar" role="progressbar"
+                                                 style="width: {{ skill.progress }}%;"
+                                                 aria-valuenow="{{ skill.progress }}"
+                                                 aria-valuemin="0"
+                                                 aria-valuemax="100"></div>
+                                        </div>
+                                        <small>{{ skill.progress }}%</small>
+                                    </div>
+                                {% else %}
+                                    <p>No skills added yet.</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reclamations Sections -->
+                    <!-- Reclamations Filed by the Freelancer -->
+                    <div class="card mt-3">
+                        <div class="card-header bg-success text-white">Your Reclamations</div>
+                        <div class="card-body">
+                            {% if reclamationsFiled|length > 0 %}
+                                <ul class="list-group">
+                                    {% for reclamation in reclamationsFiled %}
+                                        <li class="list-group-item">
+                                            <strong>Message:</strong> {{ reclamation.message }}<br>
+                                            <strong>Against:</strong> {{ reclamation.againstUser.nom }} {{ reclamation.againstUser.prenom }}<br>
+                                            {% if reclamation.projectDb %}
+                                                <strong>Project:</strong> {{ reclamation.projectDb.domaine }}
+                                            {% endif %}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
                             {% else %}
-                                <p>No skills added.</p>
-                            {% endfor %}
+                                <p class="text-muted">You have not filed any reclamations.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Reclamations Against the Freelancer -->
+                    <div class="card mt-3">
+                        <div class="card-header bg-warning text-white">Reclamations Against You</div>
+                        <div class="card-body">
+                            {% if reclamationsAgainst|length > 0 %}
+                                <ul class="list-group">
+                                    {% for reclamation in reclamationsAgainst %}
+                                        <li class="list-group-item">
+                                            <strong>Message:</strong> {{ reclamation.message }}<br>
+                                            <strong>Filed by:</strong> {{ reclamation.complainant.nom }} {{ reclamation.complainant.prenom }}<br>
+                                            {% if reclamation.projectDb %}
+                                                <strong>Project:</strong> {{ reclamation.projectDb.domaine }}
+                                            {% endif %}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-muted">No reclamations found against you.</p>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

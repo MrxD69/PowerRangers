@@ -6,6 +6,7 @@ use App\Repository\CommandeDbRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Entity\User;
 
 #[ORM\Entity(repositoryClass: CommandeDbRepository::class)]
 class CommandeDb
@@ -45,7 +46,16 @@ class CommandeDb
     #[Assert\GreaterThan("today", message: "La date de fin doit être dans le futur.")]
     private ?\DateTimeInterface $datefin = null;
 
-    // Getters et Setters
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'commandes')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $freelancer = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100, maxMessage: "Le statut ne peut pas dépasser {{ limit }} caractères.")]
+    private ?string $status = null;
+
+    // Getters and Setters
+
     public function getId(): ?int
     {
         return $this->id;
@@ -95,6 +105,30 @@ class CommandeDb
     public function setDatefin(\DateTimeInterface $datefin): static
     {
         $this->datefin = $datefin;
+
+        return $this;
+    }
+
+    public function getFreelancer(): ?User
+    {
+        return $this->freelancer;
+    }
+
+    public function setFreelancer(User $freelancer): static
+    {
+        $this->freelancer = $freelancer;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?string $status): static
+    {
+        $this->status = $status;
 
         return $this;
     }

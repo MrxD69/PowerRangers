@@ -12,8 +12,11 @@
 {% block body %}
     <div class="container">
         <div class="main-body">
+            <!-- Profile Details -->
             <div class="row gutters-sm">
+                <!-- Left Column -->
                 <div class="col-md-4 mb-3">
+                    <!-- User Profile Card -->
                     <div class="card">
                         <div class="card-body text-center">
                             <img src="{{ user.profilePicture ?: asset('img/khalil.jpg') }}" alt="Profile Picture" class="rounded-circle" width="150">
@@ -26,7 +29,9 @@
                     </div>
                 </div>
 
+                <!-- Right Column -->
                 <div class="col-md-8">
+                    <!-- User Info -->
                     <div class="card mb-3">
                         <div class="card-body">
                             <div class="row">
@@ -73,23 +78,48 @@
                         </div>
                     </div>
 
-                    <!-- Reclamations Section -->
+                    <!-- Reclamations Filed by Client -->
                     <div class="card mt-3">
-                        <div class="card-header bg-warning text-white">Reclamations Against Your Projects</div>
+                        <div class="card-header bg-success text-white">Your Reclamations</div>
                         <div class="card-body">
-                            {% if reclamations|length > 0 %}
+                            {% if reclamationsFiled|length > 0 %}
                                 <ul class="list-group">
-                                    {% for reclamation in reclamations %}
+                                    {% for reclamation in reclamationsFiled %}
                                         <li class="list-group-item">
                                             <strong>ID:</strong> {{ reclamation.id }}<br>
                                             <strong>Message:</strong> {{ reclamation.message }}<br>
-                                            <strong>Filed by:</strong> {{ reclamation.freelancer.nom }} {{ reclamation.freelancer.prenom }}<br>
-                                            <strong>Project:</strong> {{ reclamation.projectDb.domaine }}
+                                            <strong>Against:</strong> {{ reclamation.againstUser.nom }} {{ reclamation.againstUser.prenom }}<br>
+                                            {% if reclamation.commandeDb %}
+                                                <strong>Offer:</strong> {{ reclamation.commandeDb.description }}
+                                            {% endif %}
                                         </li>
                                     {% endfor %}
                                 </ul>
                             {% else %}
-                                <p class="text-muted">No reclamations found for your projects.</p>
+                                <p class="text-muted">You have not filed any reclamations.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Reclamations Against Client -->
+                    <div class="card mt-3">
+                        <div class="card-header bg-warning text-white">Reclamations Against You</div>
+                        <div class="card-body">
+                            {% if reclamationsAgainst|length > 0 %}
+                                <ul class="list-group">
+                                    {% for reclamation in reclamationsAgainst %}
+                                        <li class="list-group-item">
+                                            <strong>ID:</strong> {{ reclamation.id }}<br>
+                                            <strong>Message:</strong> {{ reclamation.message }}<br>
+                                            <strong>Filed by:</strong> {{ reclamation.complainant.nom }} {{ reclamation.complainant.prenom }}<br>
+                                            {% if reclamation.projectDb %}
+                                                <strong>Project:</strong> {{ reclamation.projectDb.domaine }}
+                                            {% endif %}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-muted">No reclamations found against you.</p>
                             {% endif %}
                         </div>
                     </div>

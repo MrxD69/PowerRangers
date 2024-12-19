@@ -53,3 +53,21 @@ security:
         - { path: ^/, roles: PUBLIC_ACCESS }
         - { path: ^/project/db, roles: PUBLIC_ACCESS } # Allow homepage for unauthenticated users
         - { path: ^/reponse/l, roles: ROLE_ADMIN }
+        # Reclamation routes for freelancers to report client projects
+        - { path: ^/reclamation/new/\d+$, roles: ROLE_FREELANCER }
+
+        # Reclamation routes for clients to report freelancer offers
+        - { path: ^/reclamation/new/commande/\d+$, roles: ROLE_CLIENT }
+
+        # Admin access to reclamations management
+        - { path: ^/reclamation(/.*)?$, roles: ROLE_ADMIN }
+
+        # Freelancer private reclamations
+        - { path: ^/freelancer/reclamations$, roles: ROLE_FREELANCER }
+
+        # Client private reclamations
+        - { path: ^/client/reclamations$, roles: ROLE_CLIENT }
+
+        # Admin profiles and dashboard
+        - { path: ^/admin(/\d+/profile|/dashboard.*)$, roles: ROLE_ADMIN }
+
