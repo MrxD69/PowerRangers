@@ -43,25 +43,25 @@ class CommandeDbType extends AbstractType
     }
 }
 
-class SearchCommandeDbType extends AbstractType
-{
-    public function buildForm(FormBuilderInterface $builder, array $options): void
-    {
-        $builder
-            ->add('id', TextType::class, [
-                'required' => false,
-                'label' => 'Search by ID',
-            ])
-            ->add('Technology', TextType::class, [
-                'required' => false,
-                'label' => 'Search by Name',
-            ])
-            ->add('description', TextType::class, [
-                'required' => false,
-                'label' => 'Search by Name',
-            ])
-            ->add('Rechercher', SubmitType::class, [
-                'label' => 'Rechercher',
-            ]);
-    }
-}
+//class SearchCommandeDbType extends AbstractType
+//{
+//    public function buildForm(FormBuilderInterface $builder, array $options): void
+//    {
+//        $builder
+//            ->add('id', TextType::class, [
+//                'required' => false,
+//                'label' => 'Search by ID',
+//            ])
+//            ->add('Technology', TextType::class, [
+//                'required' => false,
+//                'label' => 'Search by Name',
+//            ])
+//            ->add('description', TextType::class, [
+//                'required' => false,
+//                'label' => 'Search by Name',
+//            ])
+//            ->add('Rechercher', SubmitType::class, [
+//                'label' => 'Rechercher',
+//            ]);
+//    }
+//}

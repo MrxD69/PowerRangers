@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\ProjectDb;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;  // Ajout de l'import pour NotBlank
@@ -47,26 +48,26 @@ class ProjectDbType extends AbstractType
         ]);
     }
 }
-class SearchProjectDbType extends AbstractType
-{
-    public function buildForm(FormBuilderInterface $builder, array $options): void
-    {
-        $builder
-            ->add('id', TextType::class, [
-                'required' => false,
-                'label' => 'Search by ID',
-            ])
-            ->add('domaine', TextType::class, [
-                'required' => false,
-                'label' => 'Search by Name',
-            ])
-            ->add('description', TextType::class, [
-                'required' => false,
-                'label' => 'Search by Name',
-            ])
-            ->add('Rechercher', SubmitType::class, [
-                'label' => 'Rechercher',
-            ]);
-    }
-}
+//class SearchProjectDbType extends AbstractType
+//{
+//    public function buildForm(FormBuilderInterface $builder, array $options): void
+//    {
+//        $builder
+//            ->add('id', TextType::class, [
+//                'required' => false,
+//                'label' => 'Search by ID',
+//            ])
+//            ->add('domaine', TextType::class, [
+//                'required' => false,
+//                'label' => 'Search by Name',
+//            ])
+//            ->add('description', TextType::class, [
+//                'required' => false,
+//                'label' => 'Search by Name',
+//            ])
+//            ->add('Rechercher', SubmitType::class, [
+//                'label' => 'Rechercher',
+//            ]);
+//    }
+//}
 

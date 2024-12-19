@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Reclamation;
+use App\Entity\ProjectDb;
 use App\Entity\CommandeDb;
 use App\Form\Reclamation2Type;
 use App\Repository\ReclamationRepository;
@@ -13,6 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
+use App\Enum\UserRole;
 
 #[Route('/reclamation')]
 final class ReclamationController extends AbstractController
@@ -33,6 +35,42 @@ final class ReclamationController extends AbstractController
         }
         return $text;
     }
+    #[Route('/project/{projectId}/reclamation/new', name: 'app_reclamation_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, int $projectId): Response
+    {
+        $user = $this->getUser();
+
+        if (!$user || !$this->isGranted('ROLE_FREELANCER')) {
+            throw $this->createAccessDeniedException('Only freelancers can file reclamations against projects.');
+        }
+
+        $project = $this->entityManager->getRepository(ProjectDb::class)->find($projectId);
+        if (!$project) {
+            throw $this->createNotFoundException('Project not found.');
+        }
+
+        $reclamation = new Reclamation();
+        $reclamation->setEtat('non traité');
+        $reclamation->setDate(new \DateTime());
+        $reclamation->setComplainant($user);
+        $reclamation->setAgainstUser($project->getClient());
+        $reclamation->setProjectDb($project);
+
+        $form = $this->createForm(Reclamation2Type::class, $reclamation);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->persist($reclamation);
+            $this->entityManager->flush();
+
+            return $this->redirectToRoute('app_project_db_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('reclamation/new.html.twig', [
+            'reclamation' => $reclamation,
+            'form' => $form->createView(),
+        ]);
+    }
 
     #[Route('/new/commande/{commandeId}', name: 'app_reclamation_new_commande', methods: ['GET', 'POST'])]
     public function newFromClient(Request $request, int $commandeId): Response
@@ -48,16 +86,11 @@ final class ReclamationController extends AbstractController
             throw $this->createNotFoundException('Offer not found.');
         }
 
-        $freelancer = $commande->getFreelancer();
-        if (!$freelancer) {
-            throw $this->createNotFoundException('Freelancer not associated with this offer.');
-        }
-
         $reclamation = new Reclamation();
         $reclamation->setEtat('non traité');
         $reclamation->setDate(new \DateTime());
-        $reclamation->setComplainant($user); // Client files the complaint
-        $reclamation->setAgainstUser($freelancer); // The freelancer is the target
+        $reclamation->setComplainant($user);
+        $reclamation->setAgainstUser($commande->getFreelancer());
         $reclamation->setCommandeDb($commande);
 
         $form = $this->createForm(Reclamation2Type::class, $reclamation);
@@ -78,7 +111,7 @@ final class ReclamationController extends AbstractController
         ]);
     }
 
-    #[Route(name: 'app_reclamation_index', methods: ['GET'])]
+    #[Route('/', name: 'app_reclamation_index', methods: ['GET'])]
     public function index(ReclamationRepository $reclamationRepository): Response
     {
         return $this->render('reclamation/index.html.twig', [
@@ -146,10 +179,10 @@ final class ReclamationController extends AbstractController
         return $this->redirectToRoute('app_reclamation_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/reclamation/chart', name: 'app_reclamation_chart')]
-    public function reclamationChart(EntityManagerInterface $entityManager, ChartBuilderInterface $chartBuilder): Response
+    #[Route('/chart', name: 'app_reclamation_chart')]
+    public function reclamationChart(ChartBuilderInterface $chartBuilder): Response
     {
-        $reclamationRepository = $entityManager->getRepository(Reclamation::class);
+        $reclamationRepository = $this->entityManager->getRepository(Reclamation::class);
 
         $reclamations = $reclamationRepository->findAll();
 
