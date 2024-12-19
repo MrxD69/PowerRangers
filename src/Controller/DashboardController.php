@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Reclamation;
 use App\Entity\Reponse;
+use App\Entity\User;
+use App\Enum\UserRole;
 use App\Repository\EvenementRepository;
 use App\Repository\ProjectDbRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -29,7 +31,7 @@ class DashboardController extends AbstractController
         // Count the number of reclamations by state (etat)
         $etatCounts = [];
         foreach ($reclamations as $reclamation) {
-            $etat = $reclamation->getEtat(); // Accessing the 'etat' of the reclamation
+            $etat = $reclamation->getEtat();
             if (!isset($etatCounts[$etat])) {
                 $etatCounts[$etat] = 0;
             }
@@ -41,14 +43,14 @@ class DashboardController extends AbstractController
         $data = array_values($etatCounts);
 
         $chart = $chartBuilder
-            ->createChart(Chart::TYPE_BAR) // Bar chart for 'etat' and counts
+            ->createChart(Chart::TYPE_BAR)
             ->setData([
                 'labels' => $labels,
                 'datasets' => [
                     [
                         'label' => 'Number of Reclamations by Etat',
-                        'backgroundColor' => 'rgba(54, 162, 235, 0.2)', // Color of the bars
-                        'borderColor' => 'rgba(54, 162, 235, 1)', // Border color of bars
+                        'backgroundColor' => 'rgba(54, 162, 235, 0.2)',
+                        'borderColor' => 'rgba(54, 162, 235, 1)',
                         'borderWidth' => 1,
                         'data' => $data,
                     ],
@@ -83,15 +85,22 @@ class DashboardController extends AbstractController
             $projectsByDomain[$domain]++;
         }
 
-        // Separate data for use in the chart
-        $projectDomains = array_keys($projectsByDomain);
-        $projectCounts = array_values($projectsByDomain);
+        // Count Clients and Freelancers
+        $userRepository = $entityManager->getRepository(User::class);
+        $totalClients = $userRepository->count(['role' => UserRole::ROLE_CLIENT]);
+        $totalFreelancers = $userRepository->count(['role' => UserRole::ROLE_FREELANCER]);
 
-        // Retrieve reponses from the database
+        // Prepare data for circular chart
+        $userRolesData = [
+            'labels' => ['Clients', 'Freelancers'],
+            'data' => [$totalClients, $totalFreelancers]
+        ];
+
+        // Retrieve responses from the database
         $reponseRepository = $entityManager->getRepository(Reponse::class);
         $reponses = $reponseRepository->findAll();
 
-        // Retrieve evenements from the database
+        // Retrieve events from the database
         $evenements = $evenementRepository->findAll();
 
         // Prepare data for the participants chart
@@ -135,24 +144,19 @@ class DashboardController extends AbstractController
                 ],
             ]);
 
-        // Pass the participant stats for dynamic rendering
-        $eventStats = [
-            'labels' => $labelsEvents,
-            'data' => $dataParticipants,
-        ];
-
-        // Render the template with the necessary variables
         return $this->render('base_admin.html.twig', [
             'controller_name' => 'DashboardController',
             'totalProjects' => count($projects),
-            'projectDomains' => $projectDomains,
-            'projectCounts' => $projectCounts,
+            'projectDomains' => array_keys($projectsByDomain),
+            'projectCounts' => array_values($projectsByDomain),
+            'totalClients' => $totalClients,
+            'totalFreelancers' => $totalFreelancers,
+            'userRolesData' => $userRolesData,
             'chart' => $chart,
             'chartEvents' => $chartEvents,
-            'reclamations' => $reclamations, // Pass reclamations to the template
-            'reponses' => $reponses,         // Pass reponses to the template
-            'evenements' => $evenements,     // Pass evenements to the template
-            'eventStats' => $eventStats,     // Data for Participants by Event chart
+            'reclamations' => $reclamations,
+            'reponses' => $reponses,
+            'evenements' => $evenements,
         ]);
     }
 }

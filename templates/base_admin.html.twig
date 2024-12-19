@@ -19,7 +19,6 @@
 <div id="wrapper">
     <!-- Sidebar -->
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-        <!-- Sidebar Brand -->
         <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
             <div class="sidebar-brand-text mx-3">PowerRangers</div>
         </a>
@@ -36,16 +35,13 @@
         <div class="sidebar-heading">Addons</div>
         <li class="nav-item">
             <a href="{{ path('app_evenement_index') }}" class="btn btn-outline-light">
-                Total Evenements
-                <span class="badge badge-light ml-2">{{ evenements|length }}</span>
+                Total Evenements <span class="badge badge-light ml-2">{{ evenements|length }}</span>
             </a>
             <a href="{{ path('app_reclamationc') }}" class="btn btn-outline-light">
-                Total Reclamations
-                <span class="badge badge-light ml-2">{{ reclamations|length }}</span>
+                Total Reclamations <span class="badge badge-light ml-2">{{ reclamations|length }}</span>
             </a>
             <a href="{{ path('app_reponse_index') }}" class="btn btn-outline-light">
-                Total Reponses
-                <span class="badge badge-light ml-2">{{ reponses|length }}</span>
+                Total Reponses <span class="badge badge-light ml-2">{{ reponses|length }}</span>
             </a>
         </li>
         <hr class="sidebar-divider d-none d-md-block">
@@ -61,9 +57,7 @@
 
             <!-- Main Content -->
             <div class="container-fluid">
-                <!-- Page Heading -->
                 <h1 class="h3 mb-4 text-gray-800">Dashboard</h1>
-
 
                 <!-- Chart Section -->
                 <div class="row">
@@ -86,19 +80,31 @@
                                 <h6 class="m-0 font-weight-bold text-primary">Reclamations Overview</h6>
                             </div>
                             <div class="card-body">
-                                <canvas id="myChart"></canvas>
+                                <canvas id="reclamationsChart"></canvas>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Third Chart: Participants by Event -->
+                    <!-- Participants by Event Chart -->
                     <div class="col-xl-6 col-lg-6">
                         <div class="card shadow mb-4">
                             <div class="card-header py-3">
                                 <h6 class="m-0 font-weight-bold text-primary">Participants by Event</h6>
                             </div>
                             <div class="card-body">
-                                <canvas id="participantsByEvent" width="400" height="400"></canvas>
+                                <canvas id="participantsByEvent"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Clients vs Freelancers Chart -->
+                    <div class="col-xl-6 col-lg-6">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Répartition des Utilisateurs (Clients/Freelancers)</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="userRolesChart"></canvas>
                             </div>
                         </div>
                     </div>
@@ -134,28 +140,13 @@
         }]
     };
 
-    var options = {
-        responsive: true,
-        plugins: {
-            legend: { position: 'top' },
-            tooltip: {
-                callbacks: {
-                    label: function(tooltipItem) {
-                        return tooltipItem.label + ': ' + tooltipItem.raw + ' projects';
-                    }
-                }
-            }
-        }
-    };
-
-    var ctx = document.getElementById('projectsByDomain').getContext('2d');
-    new Chart(ctx, {
+    var ctx1 = document.getElementById('projectsByDomain').getContext('2d');
+    new Chart(ctx1, {
         type: 'doughnut',
         data: projectData
     });
 
     // Reclamations Overview
-    var ctx2 = document.getElementById('myChart').getContext('2d');
     var reclamationData = {
         labels: {{ chart.data.labels|json_encode|raw }},
         datasets: [{
@@ -167,13 +158,13 @@
         }]
     };
 
-    var reclamationChart = new Chart(ctx2, {
+    var ctx2 = document.getElementById('reclamationsChart').getContext('2d');
+    new Chart(ctx2, {
         type: 'doughnut',
         data: reclamationData
     });
 
     // Participants by Event
-    var ctx3 = document.getElementById('participantsByEvent').getContext('2d');
     var eventData = {
         labels: {{ chartEvents.data.labels|json_encode|raw }},
         datasets: [{
@@ -185,14 +176,45 @@
         }]
     };
 
-    var eventChart = new Chart(ctx3, {
+    var ctx3 = document.getElementById('participantsByEvent').getContext('2d');
+    new Chart(ctx3, {
         type: 'doughnut',
         data: eventData
+    });
+
+    // Clients vs Freelancers Chart
+    var userRolesData = {
+        labels: {{ userRolesData.labels|json_encode|raw }},
+        datasets: [{
+            data: {{ userRolesData.data|json_encode|raw }},
+            backgroundColor: ['#4CAF50', '#FFC107'],
+            hoverBackgroundColor: ['#81C784', '#FFD54F'],
+            borderWidth: 1
+        }]
+    };
+
+    var ctx4 = document.getElementById('userRolesChart').getContext('2d');
+    new Chart(ctx4, {
+        type: 'doughnut',
+        data: userRolesData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            return tooltipItem.label + ': ' + tooltipItem.raw + ' utilisateurs';
+                        }
+                    }
+                }
+            }
+        }
     });
 </script>
 
 <style>
-    #myChart, #participantsByEvent, #projectsByDomain {
+    #projectsByDomain, #reclamationsChart, #participantsByEvent, #userRolesChart {
         width: 100%;
         height: auto;
         max-height: 400px;
