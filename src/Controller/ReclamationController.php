@@ -30,11 +30,12 @@ final class ReclamationController extends AbstractController
     {
         $badWords = ["bad1", "bad2", "bad3", "bad4", "bad5"];
         foreach ($badWords as $word) {
-            $pattern = "/\b" . preg_quote($word, '/') . "\b/i";
+            $pattern = "/\\b" . preg_quote($word, '/') . "\\b/i";
             $text = preg_replace($pattern, "****", $text);
         }
         return $text;
     }
+
     #[Route('/project/{projectId}/reclamation/new', name: 'app_reclamation_new', methods: ['GET', 'POST'])]
     public function new(Request $request, int $projectId): Response
     {
@@ -178,11 +179,10 @@ final class ReclamationController extends AbstractController
 
         return $this->redirectToRoute('app_reclamation_index', [], Response::HTTP_SEE_OTHER);
     }
-
-    #[Route('/chart', name: 'app_reclamation_chart')]
-    public function reclamationChart(ChartBuilderInterface $chartBuilder): Response
+    #[Route('/reclamation/chart', name: 'app_reclamation_chart')]
+    public function reclamationChart(EntityManagerInterface $entityManager, ChartBuilderInterface $chartBuilder): Response
     {
-        $reclamationRepository = $this->entityManager->getRepository(Reclamation::class);
+        $reclamationRepository = $entityManager->getRepository(Reclamation::class);
 
         $reclamations = $reclamationRepository->findAll();
 

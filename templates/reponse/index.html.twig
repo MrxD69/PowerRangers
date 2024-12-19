@@ -29,7 +29,6 @@
                             <th>Id</th>
                             <th>Date</th>
                             <th>Message</th>
-                            <th>Related Reclamation</th>
                             <th>Actions</th>
                         </tr>
                         </thead>
@@ -39,13 +38,6 @@
                                 <td>{{ reponse.id }}</td>
                                 <td>{{ reponse.Date ? reponse.Date|date('Y-m-d') : '' }}</td>
                                 <td>{{ reponse.Message }}</td>
-                                <td>
-                                    {% if reponse.reclamation %}
-                                        <a href="{{ path('app_reclamation_show', {'id': reponse.reclamation.id}) }}" class="btn btn-link">View Reclamation</a>
-                                    {% else %}
-                                        No Reclamation Linked
-                                    {% endif %}
-                                </td>
                                 <td>
                                     <a href="{{ path('app_reponse_show', {'id': reponse.id}) }}" class="btn btn-primary btn-sm">consulter</a>
                                     <a href="{{ path('app_reponse_del', {'id': reponse.id}) }}" class="btn btn-danger btn-sm">supprimer</a>
